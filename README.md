@@ -38,3 +38,17 @@ function:
 - Interface for create and update the data and resume
 function:
 - updateData
+
+# Usage
+
+## Prerequisite
+- cd frontend
+- yarn
+
+## Steps
+- open ganache gui
+- truffle migrate
+- cp build to frontend/src/build
+- open metamask and connect to the account
+- cd frontend
+- yarn start
