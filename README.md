@@ -41,11 +41,11 @@ function:
 
 # Usage
 
-## Prerequisite
+## 1.Prerequisite
 - cd frontend
 - yarn
 
-## Steps
+## 2.Steps
 - open ganache gui
 - truffle migrate
 - cp build to frontend/src/build
