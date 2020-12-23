@@ -22,7 +22,7 @@ class App extends React.Component {
         AgencyAppContract.abi,
         deployedNetwork && deployedNetwork.address,
       );
-      const valid = await instance.methods.isValidAccount().call();
+      const valid = await instance.methods.isValidAccount(accounts[0]).call();
       this.setState({ web3, accounts, contract: instance, valid: valid});
     } catch (error) {
       alert(
@@ -30,6 +30,18 @@ class App extends React.Component {
       );
       console.error(error);
     }
+
+    this.state.contract.events.OnAccountAdd()
+    .on("data", function(event) {
+      let user = event.returnValues;
+      console.log("A new User!", user.userAddr);
+    }).on("error", console.error);
+
+    this.state.contract.events.OnAccountUpdate()
+    .on("data", function(event) {
+      let user = event.returnValues;
+      console.log("An User update!", user.userAddr);
+    }).on("error", console.error);
   };
 
   render(){

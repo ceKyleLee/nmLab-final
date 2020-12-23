@@ -9,7 +9,7 @@ function Home (props){
         if(yes){
             if(document.getElementsByTagName("textarea")[0].value!==""){
                 await props.contract.methods.updataAccount(document.getElementsByTagName("textarea")[0].value).send({from:accounts[0]})
-                let result = await props.contract.methods.getAccount().call();
+                let result = await props.contract.methods.getAccount(accounts[0]).call();
                 settext(result._content);
                 document.getElementsByTagName("textarea")[0].value = "";
             }
@@ -21,7 +21,7 @@ function Home (props){
 
     useEffect(()=>{
         async function fetchData(){
-            let result = await props.contract.methods.getAccount().call();
+            let result = await props.contract.methods.getAccount(props.accounts[0]).call();
             settext(result._content);
         }
         fetchData();
