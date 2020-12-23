@@ -32,7 +32,8 @@ function:
 ### Frontend
 編輯資料並發送給contract
 
-固定時間render一次頁面重要一次data
+~~固定時間render一次頁面重要一次data~~
+接收到event(OnAccountUpdate)後重新getAccount
 
 ### Contract
 - Storage for data and resume(IPFS maybe?)
@@ -41,6 +42,61 @@ function:
 
 function:
 - updataAccount(content)
+
+struct: 
+- Different struct for personal and company account
+- Personal:
+    * Name
+    * Resume
+    * Contact
+    * Offer from company (in mapping)
+    * Audition invite from company (in mapping)
+
+    Action: 
+    - Send Application 
+    - Check/Reject Audition invitation
+    - Check/Reject Offer (If check auto reject all other offers)
+
+- Company:
+    * Name
+    * Intro
+    * Job (in array)
+        - Title
+        - Description
+        - Number/Remain
+        - Application from Personal(in array)
+    
+        Action:
+        - Send Audition invite
+        - Send Offer
+        - Check/Reject application 
+
+- Offer
+    * Payment
+    * Personal address
+    * Company address
+    * JobID
+    * Msg
+    * status(Wait/Approve/Reject)
+
+- Application/Audition
+    * Personal address
+    * Company address
+    * JobID
+    * From (type: company/personal)
+    * status(Wait/Approve/Reject)
+
+Array:
+Offer
+Application/Audition
+
+
+Mapping:
+Personal account address -> Offer idx
+Personal account address -> Application/Audition idx
+Company account address  -> Offer idx
+Company account address  -> Application/Audition idx
+
 
 # Usage
 
