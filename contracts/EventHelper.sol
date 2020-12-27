@@ -5,4 +5,7 @@ contract EventHelper {
     event OnAccountUpdate(address userAddr, string userType);
     event OnApplicantStatusChange(address userAddr, uint16 newStatus);
 
+    event OnJobAdd(address userAddr, uint jobIdx);
+    event OnJobUpdate(address userAddr, uint jobIdx);
+    event OnJobStatusChange(address userAddr, uint jobIdx, uint16 newStatus);
 }

@@ -27,10 +27,14 @@ contract AgencyApp is ApplicantApp, CompanyApp  {
 
     function getAcc(address _userAddr) public view isValid(_userAddr)
     returns(string memory _name, string memory _content, bool _type) {
+        string memory name;
+        string memory content;
         if (isApplicant(_userAddr)) { // Applicant
-            return getApplicantAcc(_userAddr);
+            (name, content, ) = getApplicantAcc(_userAddr);
+            return (name, content, true);
         } else { // Company
-            return getCompanyAcc(_userAddr);
+            (name, content) = getCompanyAcc(_userAddr);
+            return (name, content, false);
         }
     } 
     

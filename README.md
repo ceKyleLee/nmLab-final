@@ -55,7 +55,11 @@ function:
     * 公司: application to opened job from applicants, offers and interview invitations from account
 
 - 更新上傳功能
-    * 公司: Add and update opened job list
+    * 公司: Add and update opened job list 
+        - Title
+        - Description
+        - Number/Remain
+        - status(open/close)
 
 - 發起交易
     * 個人: Send application to opened job, accept/reject offer/interview invitation
