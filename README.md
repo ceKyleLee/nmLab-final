@@ -8,8 +8,8 @@
 - 有帳號則跳進資料頁面，與contract要求帳號內資料
 
 ### Contract
-- Mapping of address and account
-- Interface for register and login(Retreive personal data)
+- Mapping of address and account struct
+- Interface for register and login(Retreive account data)
 
 function:
 - isValidAccount(address) ( 確認帳號是否註冊 )
@@ -37,65 +37,90 @@ function:
 
 ### Contract
 - Storage for data and resume(IPFS maybe?)
-- Interface for retrieve all personal and company data
-- Interface for create and update the data and resume
+- Interface for retrieve all data in account struct
+- Interface for update the data in struct
 
 function:
 - updataAccount(content)
 
-struct: 
-- Different struct for personal and company account
-- Personal:
+## 3. 建立交易系統
+
+### Frontend
+- 取得所有其他個人與公司帳戶資料
+    * 個人: Name, resume, application history(optional)
+    * 公司: Name, introduction, opened job list, offers and interview invitations history(optional)
+
+- 取得帳戶所有交易紀錄與狀態(status)
+    * 個人: offers and interview invitations from company, application sent from account
+    * 公司: application to opened job from applicants, offers and interview invitations from account
+
+- 更新上傳功能
+    * 公司: Add and update opened job list
+
+- 發起交易
+    * 個人: Send application to opened job, accept/reject offer/interview invitation
+    * 公司: Send offer/interview invitation to applicant, accecpt/reject application
+
+
+### Contract
+
+##### Struct 
+1. Account
+- Applicant:
     * Name
     * Resume
-    * Contact
-    * Offer from company (in mapping)
-    * Audition invite from company (in mapping)
+    * Status: Open/Close
+
+        When Closed, no offer can be sent to this account.
 
     Action: 
     - Send Application 
-    - Check/Reject Audition invitation
-    - Check/Reject Offer (If check auto reject all other offers)
+    - Check/Reject interview invitation
+    - Check/Reject offer (If check auto reject all other offers)
 
 - Company:
     * Name
     * Intro
-    * Job (in array)
-        - Title
-        - Description
-        - Number/Remain
-        - Application from Personal(in array)
+    * Job list(array)
+        - Job
+            * Title
+            * ID
+            * Description
+            * Number/Remain
+            * Status: Open/Close
     
         Action:
-        - Send Audition invite
+        - Send interview invitation
         - Send Offer
         - Check/Reject application 
 
+2. Transaction
 - Offer
     * Payment
-    * Personal address
+    * Applicant address
     * Company address
     * JobID
-    * Msg
-    * status(Wait/Approve/Reject)
+    * ID
+    * Meesage
+    * Status(Wait/Accept/Reject)
 
-- Application/Audition
-    * Personal address
+- Application/Interview
+    * Applicant address
     * Company address
     * JobID
-    * From (type: company/personal)
-    * status(Wait/Approve/Reject)
+    * ID
+    * Meesage
+    * From (company/applicant)
+    * Status(Wait/Accept/Reject)
 
-Array:
+##### Array:
 Offer
-Application/Audition
+Application/Interview
 
 
-Mapping:
-Personal account address -> Offer idx
-Personal account address -> Application/Audition idx
-Company account address  -> Offer idx
-Company account address  -> Application/Audition idx
+##### Mapping:
+address -> Offer idx
+address -> Application/Interview idx
 
 
 # Usage
