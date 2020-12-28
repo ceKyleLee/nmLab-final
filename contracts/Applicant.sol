@@ -16,6 +16,8 @@ contract ApplicantApp is EventHelper {
         uint16 status;
         uint   idx;
         bool   isValid;
+
+        uint[] invitations;
     }
 
     mapping(address => Applicant) applicants;
@@ -31,7 +33,7 @@ contract ApplicantApp is EventHelper {
         return (applicants[addr].isValid);
     }
 
-
+    // Action 
     function addApplicantAcc(string memory _name) internal {
         applicants[msg.sender].name    = _name;
         applicants[msg.sender].isValid = true;
@@ -40,6 +42,33 @@ contract ApplicantApp is EventHelper {
         emit OnAccountAdd(msg.sender, "Applicant");
     }
 
+    function updateApplicantAcc(string memory _content) internal isValidApplicant(msg.sender) {
+        Applicant storage acc = applicants[msg.sender];
+        acc.resume = _content;
+        emit OnAccountUpdate(msg.sender, "Applicant");
+    }
+
+
+    // Currently solidity only support return of array if you use pragma experimental ABIEncoderV2. 
+    // If you dont want to use that, you have to create one more function that will return the lenght
+    // of the array and in the Dapp creates a for loop and access the element of array through index. 
+    function getApplicantsNum() public view returns (uint _len) {
+        return applicantAddrs.length;
+    }
+
+    function getApplicantAddr(uint _idx) public view returns (address _userAddr) {
+        require(_idx < applicantAddrs.length, "Idx not valid!");
+        return applicantAddrs[_idx];
+    }
+
+    function updateApplicantStatus(uint _newStatus) public isValidApplicant(msg.sender) {
+        require( _newStatus < uint(AppStatus.Last), "New status is not valid" );
+        Applicant storage acc = applicants[msg.sender];
+        acc.status = uint16(_newStatus);
+        emit OnApplicantStatusChange(msg.sender, acc.status);
+    }
+
+    // View
     function getApplicantAcc(address _userAddr) internal view isValidApplicant(_userAddr)
     returns(string memory _name, string memory _content, uint _status) {
         Applicant storage acc = applicants[_userAddr];
@@ -52,31 +81,16 @@ contract ApplicantApp is EventHelper {
         return uint(acc.status);
     }
 
-    function updateApplicantAcc(string memory _content) internal isValidApplicant(msg.sender) {
-        Applicant storage acc = applicants[msg.sender];
-        acc.resume = _content;
-        emit OnAccountUpdate(msg.sender, "Applicant");
+    function getApplincantInvNum(address _userAddr) public view isValidApplicant(_userAddr) 
+    returns(uint _num) {
+        Applicant storage acc = applicants[_userAddr];
+        return acc.invitations.length;
     }
 
-
-    // Action 
-
-    // Currently solidity only support return of array if you use pragma experimental ABIEncoderV2. 
-    // If you dont want to use that, you have to create one more function that will return the lenght
-    // of the array and in the Dapp creates a for loop and access the element of array through index. 
-    function getApplicantsNum() public view returns (uint _len) {
-        return applicantAddrs.length;
+    function getApplincantInvIdx(address _userAddr, uint _invPos) public view isValidApplicant(_userAddr) 
+    returns(uint _invIdx) {
+        Applicant storage acc = applicants[_userAddr];
+        require(_invPos < acc.invitations.length, "Idx not valid!");
+        return acc.invitations[_invPos];
     }
-
-    function getApplicantAddr(uint _idx) public view returns (address _userAddr) {
-        return applicantAddrs[_idx];
-    }
-
-    function updateApplicantStatus(uint _newStatus) public isValidApplicant(msg.sender) {
-        require( _newStatus < uint(AppStatus.Last), "New status is not valid" );
-        Applicant storage acc = applicants[msg.sender];
-        acc.status = uint16(_newStatus);
-        emit OnApplicantStatusChange(msg.sender, acc.status);
-    }
-
 }

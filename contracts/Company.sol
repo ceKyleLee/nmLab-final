@@ -17,6 +17,7 @@ contract CompanyApp is EventHelper {
         uint16 status;
 
         uint   idx;
+        uint[] invitations;
     }
 
     struct Company {
@@ -78,22 +79,20 @@ contract CompanyApp is EventHelper {
     // Action
     function AddCompanyJob(string memory _title, string memory _description, uint _num) public isValidCompany(msg.sender) {
         Company storage acc = companies[msg.sender];
-        Job memory newJob = Job({
-            title:_title, 
-            description: _description, 
-            number: _num, 
-            remain: _num, 
-            status: uint16(JobStatus.open), 
-            idx: 0
-        });
+        Job memory newJob;
+        
+        newJob.title =_title;
+        newJob.description = _description;
+        newJob.number = _num;
+        newJob.remain = _num;
+        newJob.status = uint16(JobStatus.open);
+        
         newJob.idx = acc.joblist.push(newJob)-1;
         emit OnJobAdd(msg.sender, newJob.idx);
     }
 
     function UpdateJob(uint _jobIdx, string memory _title, string memory _description, uint _num) public isValidCompany(msg.sender) {
-        Company storage acc = companies[msg.sender];
-        require(_jobIdx < acc.joblist.length, "Job idx not valid!");
-        Job storage job = acc.joblist[_jobIdx];
+        Job storage job = getJob(msg.sender, _jobIdx);
         job.title = _title;
         job.description = _description;
         job.number = _num;
@@ -101,13 +100,10 @@ contract CompanyApp is EventHelper {
         emit OnJobUpdate(msg.sender, job.idx);
     }
 
-    function ChangeJobStatus(uint _jobIdx, uint _newStatus) public isValidCompany(msg.sender) {
+    function updateJobStatus(uint _jobIdx, uint _newStatus) public isValidCompany(msg.sender) {
         require( _newStatus < uint(JobStatus.Last), "New status is not valid!" );
 
-        Company storage acc = companies[msg.sender];
-        require(_jobIdx < acc.joblist.length, "Job idx not valid!");
-
-        Job storage job = acc.joblist[_jobIdx];
+        Job storage job = getJob(msg.sender, _jobIdx);
         job.status = uint16(_newStatus);
         emit OnJobStatusChange(msg.sender, job.idx, job.status);
     }
@@ -121,11 +117,27 @@ contract CompanyApp is EventHelper {
     function getJobContent(address _userAddr, uint _jobIdx) public view 
     returns (string memory _title, string memory _description, 
     uint _num, uint _remain, uint _status) {
-        Company storage acc = companies[_userAddr];
-        require(_jobIdx < acc.joblist.length, "Job idx not valid!");
-
-        Job storage job = acc.joblist[_jobIdx];
+        Job storage job = getJob(_userAddr, _jobIdx);
         return ( job.title,job.description,job.number,job.remain, uint(job.status));
     }
 
+    function getJobInvNum(address _userAddr, uint _jobIdx) public view isValidCompany(_userAddr) 
+    returns(uint _num) {
+        Job storage job = getJob(_userAddr, _jobIdx);
+        return job.invitations.length;
+    }
+
+    function getJobInvIdx(address _userAddr, uint _jobIdx, uint _invPos) public view isValidCompany(_userAddr) 
+    returns(uint _invIdx) {
+        Job storage job = getJob(_userAddr, _jobIdx);
+        return job.invitations[_invPos];
+    }
+
+    // Helper 
+    function getJob(address _userAddr, uint _jobIdx) internal view 
+    returns(Job storage) {
+        Company storage acc = companies[_userAddr];
+        require(_jobIdx < acc.joblist.length, "Job idx not valid!");
+        return acc.joblist[_jobIdx];
+    }
 }

@@ -105,7 +105,7 @@ function:
     * Company address
     * JobID
     * ID
-    * Meesage
+    * Message
     * Status(Wait/Accept/Reject)
 
 - Application/Interview
@@ -113,9 +113,10 @@ function:
     * Company address
     * JobID
     * ID
-    * Meesage
+    * Message
     * From (company/applicant)
     * Status(Wait/Accept/Reject)
+    * Timestamp
 
 ##### Array:
 Offer

@@ -8,4 +8,11 @@ contract EventHelper {
     event OnJobAdd(address userAddr, uint jobIdx);
     event OnJobUpdate(address userAddr, uint jobIdx);
     event OnJobStatusChange(address userAddr, uint jobIdx, uint16 newStatus);
+
+    event OnInvitationAdd(address applicant, address company, uint jobIdx, bool direction);
+    event OnInvitationUpdate(address applicant, address company, uint jobIdx, bool direction, uint16 status);
+
+    function checkMsgsender() public view returns(address){
+        return msg.sender;
+    }
 }
