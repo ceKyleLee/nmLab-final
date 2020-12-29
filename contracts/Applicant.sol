@@ -18,6 +18,7 @@ contract ApplicantApp is EventHelper {
         bool   isValid;
 
         uint[] invitations;
+        uint[] offers;
     }
 
     mapping(address => Applicant) applicants;
@@ -92,5 +93,18 @@ contract ApplicantApp is EventHelper {
         Applicant storage acc = applicants[_userAddr];
         require(_invPos < acc.invitations.length, "Idx not valid!");
         return acc.invitations[_invPos];
+    }
+
+    function getApplincantOffNum(address _userAddr) public view isValidApplicant(_userAddr) 
+    returns(uint _num) {
+        Applicant storage acc = applicants[_userAddr];
+        return acc.offers.length;
+    }
+
+    function getApplincantOffIdx(address _userAddr, uint _offPos) public view isValidApplicant(_userAddr) 
+    returns(uint _invIdx) {
+        Applicant storage acc = applicants[_userAddr];
+        require(_offPos < acc.offers.length, "Idx not valid!");
+        return acc.offers[_offPos];
     }
 }

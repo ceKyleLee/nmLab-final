@@ -107,6 +107,7 @@ function:
     * ID
     * Message
     * Status(Wait/Accept/Reject)
+    * Timestamp
 
 - Application/Interview
     * Applicant address
@@ -116,7 +117,9 @@ function:
     * Message
     * From (company/applicant)
     * Status(Wait/Accept/Reject)
-    * Timestamp
+    * createTime
+    * lastUpdateTime
+
 
 ##### Array:
 Offer

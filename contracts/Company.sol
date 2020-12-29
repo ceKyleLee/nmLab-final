@@ -18,6 +18,7 @@ contract CompanyApp is EventHelper {
 
         uint   idx;
         uint[] invitations;
+        uint[] offers;
     }
 
     struct Company {
@@ -130,7 +131,21 @@ contract CompanyApp is EventHelper {
     function getJobInvIdx(address _userAddr, uint _jobIdx, uint _invPos) public view isValidCompany(_userAddr) 
     returns(uint _invIdx) {
         Job storage job = getJob(_userAddr, _jobIdx);
+        require(_invPos < job.invitations.length, "Idx not valid!");
         return job.invitations[_invPos];
+    }
+
+    function getJobOffNum(address _userAddr, uint _jobIdx) public view isValidCompany(_userAddr) 
+    returns(uint _num) {
+        Job storage job = getJob(_userAddr, _jobIdx);
+        return job.offers.length;
+    }
+
+    function getJobOffIdx(address _userAddr, uint _jobIdx, uint _offPos) public view isValidCompany(_userAddr) 
+    returns(uint _invIdx) {
+        Job storage job = getJob(_userAddr, _jobIdx);
+        require(_offPos < job.offers.length, "Idx not valid!");
+        return job.offers[_offPos];
     }
 
     // Helper 
