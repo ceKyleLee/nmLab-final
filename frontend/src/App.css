@@ -7,13 +7,46 @@
   display: flex;
   height: 80%;
 }
+.nav {
+  width: 12%;
+}
+
+nav ul {
+  list-style: none;
+  background-color: rgb(230,230,230);
+  margin: 0;
+  padding: 0;
+  border: 2px solid black
+}
+
+nav a{
+  color: inherit;
+  text-decoration: none;
+  font-size: 1.2rem;
+  display: block;
+  padding: 10px;
+}
+
+nav a:hover{
+  background-color: rgb(115,115,115);
+  color: white;
+}
 
 .left-box {
-  width: 50%;
+  width: 44%;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
+.profile-context {
+  font-size: 32px;
+  border: 3px solid black;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
 
 .context-input {
   font-size: 32px;
@@ -29,8 +62,15 @@
 }
 
 .right-box {
-  width: 50%;
+  width: 44%;
   text-align: center;
+}
+
+.dot {
+  height: 25px;
+  width: 25px;
+  border-radius: 50%;
+  display: inline-block;
 }
 
 .context-output {
