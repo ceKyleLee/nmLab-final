@@ -3,6 +3,7 @@ import Profile from './Profile';
 import Applicant from './Applicant';
 import Company from './Company';
 import Upload from './Upload';
+import Job from './Job';
 
 function Home (props){
     const [page,setpage] = useState("Profile")
@@ -32,6 +33,12 @@ function Home (props){
     if(page==="Upload"){
         return(
             <Upload contract={props.contract} accounts={props.accounts} setpage={switchpage}></Upload>
+        );
+    }
+
+    if(page=="Job"){
+        return(
+            <Job contract={props.contract} accounts={props.accounts} setpage={switchpage}></Job>
         );
     }
 }

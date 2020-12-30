@@ -28,6 +28,7 @@ function Signup (props){
                 <p>Please select one of account type</p>
                 <input type="radio" id="personal" name="account_type" value="true" required></input>
                 <label for="personal">Personal Account</label>
+                &nbsp;&nbsp;&nbsp;&nbsp;
                 <input type="radio" id="company" name="account_type" value="false" required></input>
                 <label for="company">Company Account</label>
                 <br></br>

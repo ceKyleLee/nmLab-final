@@ -37,6 +37,7 @@ function Company(props){
                             <li><a onClick={()=>props.setpage("Applicant")}>Applicants' info</a></li>
                             <li><a onClick={()=>props.setpage("Company")}>Companies' info</a></li>
                             {type? <li><a onClick={()=>props.setpage("Upload")}>Upload resume</a></li>:<li><a onClick={()=>props.setpage("Upload")}>Upload intro</a></li>}
+                            {type? null:<li><a onClick={()=>props.setpage("Job")}>Job manager</a></li>}
                         </ul>
                     </nav>
                 </div>

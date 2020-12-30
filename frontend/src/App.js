@@ -31,7 +31,7 @@ class App extends React.Component {
       console.error(error);
     }
 
-    this.state.contract.events.OnAccountAdd().on("data",function(event){
+    /*this.state.contract.events.OnAccountAdd().on("data",function(event){
       let user = event.returnValues;
       console.log("A new User!",user.userAddr,user.userType);
     }).on("error",console.error);
@@ -39,7 +39,7 @@ class App extends React.Component {
     this.state.contract.events.OnAccountUpdate().on("data",function(event){
       let user = event.returnValues;
       console.log("An User update!",user.userAddr,user.userType);
-    }).on("error",console.error);
+    }).on("error",console.error);*/
     
   };
 
