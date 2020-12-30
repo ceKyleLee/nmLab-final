@@ -40,6 +40,7 @@ class App extends React.Component {
       let user = event.returnValues;
       console.log("An User update!",user.userAddr,user.userType);
     }).on("error",console.error);
+    
   };
 
   render(){

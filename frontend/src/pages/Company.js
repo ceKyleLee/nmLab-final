@@ -1,14 +1,24 @@
 import { useState, useEffect } from 'react';
 
 function Company(props){
-    const [name,setname] = useState("")
-    const [type,settype] = useState("")
+    const accounts = props.accounts;
+    const [name,setname] = useState("");
+    const [type,settype] = useState("");
+    const [infos,setinfos] = useState([]);
 
     useEffect(()=>{
         async function fetchData(){
             let {0:name, 1:content, 2:type} = await props.contract.methods.getAddrInfo(props.accounts[0]).call();
             setname(name);
             settype(type);
+            let n = await props.contract.methods.getCompanyNum().call();
+            let infos_tmp = [];
+            for(let i=0;i<n;i=i+1){
+                let addr = await props.contract.methods.getCompanyAddr(i).call();
+                let {0:name, 1: content, 2:type} = await props.contract.methods.getAddrInfo(addr).call();
+                infos_tmp[i] = {name:name,content:content};
+            }
+            setinfos(infos_tmp);
         }
         fetchData();
     });
@@ -30,11 +40,16 @@ function Company(props){
                         </ul>
                     </nav>
                 </div>
-                <div className="left-box">
-                    
+                <div className="major-box">
+                    {infos.map(e=>
+                        <div>
+                            <h1>{e.name}</h1>
+                            <h2>{e.content}</h2>
+                            <h2>----------------------------------------------------</h2>
+                        </div>
+                    )}
                 </div>
-                <div className="right-box">
-                    
+                <div className="minor-box">
                 </div>
             </div>
         </div>
