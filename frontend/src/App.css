@@ -83,9 +83,10 @@ nav a:hover{
 }
 
 .major-box {
-  width: 76%
+  width: 76%;
 }
 
 .minor-box {
   width: 12%;
+  text-align: left;
 }

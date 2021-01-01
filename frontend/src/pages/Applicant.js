@@ -5,10 +5,12 @@ function Applicant(props){
     const [name,setname] = useState("");
     const [type,settype] = useState("");
     const [infos,setinfos] = useState([]);
+    const [jobs,setjobs] = useState([]);
+    const [formstate,setformstate] = useState(0);
 
     useEffect(()=>{
         async function fetchData(){
-            let {0:name, 1:content, 2:type} = await props.contract.methods.getAddrInfo(props.accounts[0]).call();
+            let {0:name, 1:content, 2:type} = await props.contract.methods.getAddrInfo(accounts[0]).call();
             setname(name);
             settype(type);
             let n = await props.contract.methods.getApplicantsNum().call();
@@ -16,12 +18,30 @@ function Applicant(props){
             for(let i=0;i<n;i=i+1){
                 let addr = await props.contract.methods.getApplicantAddr(i).call();
                 let {0:name, 1: content, 2:type} = await props.contract.methods.getAddrInfo(addr).call();
-                infos_tmp[i] = {name:name,content:content};
+                let status = await props.contract.methods.getApplicantStatus(addr).call();
+                infos_tmp[i] = {addr:addr, name:name, content:content, status:status==='0'};
             }
             setinfos(infos_tmp);
+            if(!type){
+                n = await props.contract.methods.getCompanyJobNum(accounts[0]).call();
+                let jobs_tmp = []
+                for(let i=0;i<n;i=i+1){
+                    let {0:title, 1:description, 2:vacancy, 3:remain, 4:status} = await props.contract.methods.getJobContent(accounts[0],i).call();
+                    jobs_tmp[i] = {title:title, description:description, vacancy:vacancy, remain:remain, status:status==='0'?true:false};
+                }
+                setjobs(jobs_tmp);
+            }
         }
         fetchData();
-    },[name,type]);
+    });
+
+    const interview = async () => {
+        setformstate(0);
+    }
+
+    const offer = async () => {
+        setformstate(0);
+    }
 
     return(
         <div className="App">
@@ -44,13 +64,39 @@ function Applicant(props){
                 <div className="major-box">
                     {infos.map(e=>
                         <div>
-                            <h1>{e.name}</h1>
-                            <h2>{e.content}</h2>
+                            <h1>{e.name}&nbsp;&nbsp;&nbsp;&nbsp;Status: <span className="dot" style={e.status? {backgroundColor:"green"}:{backgroundColor:"red"}}></span></h1>
+                            <details>
+                                <summary>Resume</summary>
+                                <h2>{e.content}</h2>
+                            </details>
+                            {type||!e.status? null:
+                                <div>
+                                    <br></br>
+                                    <button onClick={()=>setformstate(1)}>Interview</button>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <button onClick={()=>setformstate(2)}>offer</button>
+                                </div>
+                            }
                             <h2>----------------------------------------------------</h2>
                         </div>
                     )}
                 </div>
                 <div className="minor-box">
+                    {formstate===0? null:
+                    <form name="form">
+                        <p>Select one job</p>
+                        {jobs.map((e,index)=>
+                            <div>
+                                <input type="radio" name="job_index" value={index} required></input>
+                                <label for="personal">{e.title}</label>
+                            </div>
+                        )}
+                        <br></br>
+                        {formstate===1? 
+                        <button onClick={()=>interview()}>Submit</button>
+                        :<button onClick={()=>offer()}>Submit</button>}
+                    </form>
+                    }
                 </div>
             </div>
         </div>

@@ -50,7 +50,7 @@ function Upload(props){
                     </nav>
                 </div>
                 <div className="left-box">
-                    <textarea className="context-input" maxLength="200" placeholder={type? "type your resume...":"type company introduction..."} required></textarea>
+                    <textarea className="context-input" maxLength="400" placeholder={type? "type your resume...":"type company introduction..."} required></textarea>
                     <button className="context-submit" onClick={submit}>submit</button>
                 </div>
                 <div className="right-box">
