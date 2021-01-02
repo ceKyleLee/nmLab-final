@@ -99,36 +99,43 @@ function:
         - Check/Reject application 
 
 2. Transaction
-- Offer
-    * Payment
-    * Applicant address
-    * Company address
-    * JobID
-    * ID
-    * Message
-    * Status(Wait/Accept/Reject)
-    * Timestamp
+- Limit for creating new offer
+    * Applicant status: open
+	* Job: remain > 0
+    * No open tx between them.
+    * Cool down: Only after cool down since last closed inivite(if any) the new invitation can be sent.
 
-- Application/Interview
+- Offer
+    * Payment(array)
     * Applicant address
     * Company address
     * JobID
-    * ID
+    * Message
+    * Status
+        - open (Wating for applicant to check)
+        - reject
+        - accept
+    * createTime
+    * updateTime
+    * Action:
+        - Before offer expired(since created) or accepted, job can update payment and message(after cool down or applicant reject).
+        - Job can only send num of offer less or equal to remain.
+		- Once applicant accept one offer, automatic close all other offers, remain of job - 1.
+
+- Invitation
+    * Applicant address
+    * Company address
+    * JobID
     * Message
     * From (company/applicant)
-    * Status(Wait/Accept/Reject)
+    * Status
+        - open   (wating for applicant to check)
+		- reject (applicant not satisfy with the last offer, job can update offer msg and payment.)
+		- accpet (applicant accecpt offer)
+		- close  (offer is expired or applicant already accept another offer)
     * createTime
-    * lastUpdateTime
+    * updateTime
 
-
-##### Array:
-Offer
-Application/Interview
-
-
-##### Mapping:
-address -> Offer idx
-address -> Application/Interview idx
 
 
 # Usage
