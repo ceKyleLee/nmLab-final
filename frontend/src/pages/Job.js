@@ -76,7 +76,7 @@ function Job(props){
         <div className="App">
             <div className="header">
                 <h1>去中心化人力銀行</h1>
-                <h3>Username:{name} Account Type:{type? "Personal":"Company"}</h3>
+                <h3>Username:{name}&nbsp;&nbsp;&nbsp;&nbsp;Account Type:{type? "Personal":"Company"}</h3>
             </div>
             <div className="body">
                 <div className="nav">

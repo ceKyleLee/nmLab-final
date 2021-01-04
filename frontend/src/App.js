@@ -31,15 +31,55 @@ class App extends React.Component {
       console.error(error);
     }
 
-    /*this.state.contract.events.OnAccountAdd().on("data",function(event){
+    this.state.contract.events.OnAccountAdd().on("data",function(event){
       let user = event.returnValues;
-      console.log("A new User!",user.userAddr,user.userType);
+      console.log("A new account!",user.userAddr,user.userType);
     }).on("error",console.error);
 
     this.state.contract.events.OnAccountUpdate().on("data",function(event){
       let user = event.returnValues;
-      console.log("An User update!",user.userAddr,user.userType);
-    }).on("error",console.error);*/
+      console.log("An account updated!",user.userAddr,user.userType);
+    }).on("error",console.error);
+
+    this.state.contract.events.OnApplicantStatusChange().on("data",function(event){
+      let user = event.returnValues;
+      console.log("An user status updated!",user.userAddr,user.newStatus);
+    }).on("error",console.error);
+
+    this.state.contract.events.OnJobAdd().on("data",function(event){
+      let job = event.returnValues;
+      console.log("A job added!",job.userAddr,job.jobIdx);
+    }).on("error",console.error);
+
+    this.state.contract.events.OnJobUpdate().on("data",function(event){
+      let job = event.returnValues;
+      console.log("A job updated!",job.userAddr,job.jobIdx);
+    }).on("error",console.error);
+
+    this.state.contract.events.OnJobStatusChange().on("data",function(event){
+      let job = event.returnValues;
+      console.log("A job status changed!",job.userAddr,job.jobIdx,job.newStatus);
+    }).on("error",console.error);
+
+    this.state.contract.events.OnInvitationAdd().on("data",function(event){
+      let inv = event.returnValues;
+      console.log("An invitation added!",inv.applicant,inv.company,inv.jobIdx,inv.direction);
+    }).on("error",console.error);
+
+    this.state.contract.events.OnInvitationUpdate().on("data",function(event){
+      let inv = event.returnValues;
+      console.log("An invitation updated!",inv.applicant,inv.company,inv.jobIdx,inv.direction,inv.status);
+    }).on("error",console.error);
+
+    this.state.contract.events.OnOfferAdd().on("data",function(event){
+      let off = event.returnValues;
+      console.log("An offer added!",off.applicant,off.company,off.jobIdx,off.payment);
+    }).on("error",console.error);
+
+    this.state.contract.events.OnOfferUpdate().on("data",function(event){
+      let off = event.returnValues;
+      console.log("An offer updated!",off.applicant,off.company,off.jobIdx,off.payment,off.status);
+    }).on("error",console.error);
     
   };
 
