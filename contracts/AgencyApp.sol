@@ -23,7 +23,7 @@ contract AgencyApp is ApplicantApp, CompanyApp  {
         uint idx;
         uint256 timestamp;
     }
-    uint256 constant invDeadline = 1 seconds;
+    uint256 constant invDeadline = 7 days;
 
 
     enum offerStatus{
@@ -62,7 +62,7 @@ contract AgencyApp is ApplicantApp, CompanyApp  {
 
     modifier modifiableInv(uint invIdx, address addr) {
         Invitation storage inv = invitations[invIdx];
-        require(((inv.status == uint16(interStatus.wait)) && (now >= inv.timestamp+invDeadline)), "This invitation has been lock!");
+        require(((inv.status == uint16(interStatus.wait)) && (inv.timestamp+invDeadline >= now)), "This invitation has been lock!");
         if (inv.direction) { // From applicant
             require(inv.company == addr, "Only company can update this invitation!");
         } else { // From company
