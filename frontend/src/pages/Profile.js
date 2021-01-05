@@ -21,10 +21,10 @@ function Profile(props){
                 let app_invs = [];
                 for(let i=0;i<app_inv_num;i=i+1){
                     let app_inv_index = await props.contract.methods.getApplincantInvIdx(accounts[0],i).call();
-                    let {0: invApp, 1: invCom, 2: invJob, 3: invMsg, 4: invDir, 5:invStatus, 6: invTime} = await props.contract.methods.getInvitationInfo(app_inv_index).call();
+                    let {0: invApp, 1: invCom, 2: invJob, 3: invMsg, 4: invDir, 5:invStatus, 6: invTime, 7:invDur} = await props.contract.methods.getInvitationInfo(app_inv_index).call();
                     let {0: Com_name} = await props.contract.methods.getAddrInfo(invCom).call();
                     let {0: Job_title} = await props.contract.methods.getJobContent(invCom,invJob).call();
-                    app_invs[i] = {invIdx:app_inv_index, invApp:invApp, invCom:Com_name, invJob:Job_title, invMsg:invMsg, invDir:invDir, invStatus:invStatus, invTime:invTime};
+                    app_invs[i] = {invIdx:app_inv_index, invApp:invApp, invCom:Com_name, invJob:Job_title, invMsg:invMsg, invDir:invDir, invStatus:invStatus, invTime:parseInt(invTime,10), invDur:parseInt(invDur,10)};
                 }
                 setjobs(app_invs);
             }
@@ -37,9 +37,9 @@ function Profile(props){
                     let job_invs = [];
                     for(let j=0;j<job_inv_num;j=j+1){
                         let job_inv_index = await props.contract.methods.getJobInvIdx(accounts[0],i,j).call();
-                        let {0: invApp, 1: invCom, 2: invJob, 3: invMsg, 4: invDir, 5:invStatus, 6: invTime} = await props.contract.methods.getInvitationInfo(job_inv_index).call();
+                        let {0: invApp, 1: invCom, 2: invJob, 3: invMsg, 4: invDir, 5:invStatus, 6: invTime, 7:invDur} = await props.contract.methods.getInvitationInfo(job_inv_index).call();
                         let {0: App_name} = await props.contract.methods.getAddrInfo(invApp).call();
-                        job_invs[j] = {invIdx:job_inv_index,invApp:App_name, invCom:invCom, invJob:invJob, invMsg:invMsg, invDir:invDir, invStatus:invStatus, invTime:invTime};
+                        job_invs[j] = {invIdx:job_inv_index,invApp:App_name, invCom:invCom, invJob:invJob, invMsg:invMsg, invDir:invDir, invStatus:invStatus, invTime:parseInt(invTime,10), invDur:parseInt(invDur,10)};
                     }
                     jobs_tmp[i] = {title:title, description:description, vacancy:vacancy, remain:remain, status:status==='0'?true:false, invitation:job_invs};
                 }
@@ -92,21 +92,23 @@ function Profile(props){
                     <button onClick={changeStatus}>{status? "close":"open"}</button>
                     <h2>----------------------------------------------------</h2>
                     <h2>Interview Invitation(Waiting)</h2>
-                    {jobs.filter(e => e.invStatus==='0' && !e.invDir).map(e=>
+                    {jobs.filter(e => e.invStatus==='0' && !e.invDir && (Math.floor(+ new Date()/1000)<=e.invTime+e.invDur) ).map(e=>
                         <div>
                             <p>{e.invCom} invites you to the interview of job of {e.invJob}.</p>
                             <p>Msg: {e.invMsg}</p>
                             <button onClick={()=>changeInvStatus(e.invIdx,1)}>Accept</button>
                             &nbsp;&nbsp;&nbsp;&nbsp;
                             <button onClick={()=>changeInvStatus(e.invIdx,2)}>Reject</button>
+                            <p>----------------------------------------------------</p>
                         </div>
                     )}
                     <h2>----------------------------------------------------</h2>
                     <h2>Application Submitted(Waiting)</h2>
-                    {jobs.filter(e => e.invStatus==='0' && e.invDir).map(e=>
+                    {jobs.filter(e => e.invStatus==='0' && e.invDir && (Math.floor(+ new Date()/1000)<=e.invTime+e.invDur) ).map(e=>
                         <div>
                             <p>You apply for the job of {e.invJob} in {e.invCom}.</p>
                             <p>Msg: {e.invMsg}</p>
+                            <p>----------------------------------------------------</p>
                         </div>    
                     )}
                     <h2>----------------------------------------------------</h2>
@@ -115,14 +117,16 @@ function Profile(props){
                         <div>
                             {e.invStatus==='1'? <p>You accepted {e.invCom}'s invitation to interview on the job of {e.invJob}.</p> : <p>You rejected {e.invCom}'s invitation to interview on the job of {e.invJob}.</p>}
                             <p>Msg: {e.invMsg}</p>
+                            <p>----------------------------------------------------</p>
                         </div>
                     )}
                     <h2>----------------------------------------------------</h2>
                     <h2>Application Submitted(Finished)</h2>
                     {jobs.filter(e => e.invStatus!=='0' && e.invDir).map(e=>
                         <div>
-                            {e.invStatus==='1'? <p>{e.invCom} accepted your application.</p> : <p>{e.invCom} rejected your application.</p>}
+                            {e.invStatus==='1'? <p>{e.invCom} accepted your application on the job of {e.invJob}.</p> : <p>{e.invCom} rejected your application on the job of {e.invJob}.</p>}
                             <p>Msg: {e.invMsg}</p>
+                            <p>----------------------------------------------------</p>
                         </div>    
                     )}
                 </div>:
@@ -133,7 +137,7 @@ function Profile(props){
                         <h2>Vacancy: {e.vacancy}&nbsp;&nbsp;&nbsp;&nbsp;Remain: {e.remain}&nbsp;&nbsp;&nbsp;&nbsp;Status: <span className="dot" style={e.status? {backgroundColor:"green"}:{backgroundColor:"red"}}></span></h2>
                         <details>
                             <summary>Application Recieved(Waiting)</summary>
-                            {e.invitation.filter(i => i.invStatus==='0' && i.invDir).map(i=>
+                            {e.invitation.filter(i => i.invStatus==='0' && i.invDir && (Math.floor(+ new Date()/1000)<=i.invTime+i.invDur) ).map(i=>
                                 <div>
                                     <p>{i.invApp} apply to this job.</p>
                                     <p>Msg: {i.invMsg}</p>
@@ -146,7 +150,7 @@ function Profile(props){
                         </details>
                         <details>
                             <summary>Interview Invatation Sent(Waiting)</summary>
-                            {e.invitation.filter(i => i.invStatus==='0' && !i.invDir).map(i=>
+                            {e.invitation.filter(i => i.invStatus==='0' && !i.invDir && (Math.floor(+ new Date()/1000)<=i.invTime+i.invDur) ).map(i=>
                                 <div>
                                     <p>You invite {i.invApp} to interview.</p>
                                     <p>Msg: {i.invMsg}</p>

@@ -17,9 +17,18 @@ function Applicant(props){
             let infos_tmp = [];
             for(let i=0;i<n;i=i+1){
                 let addr = await props.contract.methods.getApplicantAddr(i).call();
-                let {0:name, 1: content} = await props.contract.methods.getAddrInfo(addr).call();
+                let {0:_name, 1: content} = await props.contract.methods.getAddrInfo(addr).call();
                 let status = await props.contract.methods.getApplicantStatus(addr).call();
-                infos_tmp[i] = {addr:addr, name:name, content:content, status:status==='0'};
+                let inv_num = await props.contract.methods.getApplincantInvNum(addr).call();
+                let invs = [];
+                for(let j=0;j<inv_num;j=j+1){
+                    let inv_index = await props.contract.methods.getApplincantInvIdx(addr,j).call();
+                    let {0: invApp, 1: invCom, 2: invJob, 3: invMsg, 4: invDir, 5:invStatus, 6: invTime, 7: invDur} = await props.contract.methods.getInvitationInfo(inv_index).call();
+                    let {0: Com_name} = await props.contract.methods.getAddrInfo(invCom).call();
+                    let {0: Job_title} = await props.contract.methods.getJobContent(invCom,invJob).call();
+                    invs[j] = {invIdx:inv_index, invApp:invApp, invCom:Com_name, invJob:Job_title, invMsg:invMsg, invDir:invDir, invStatus:invStatus, invTime:parseInt(invTime,10), invDur:parseInt(invDur,10)};
+                }
+                infos_tmp[i] = {addr:addr, name:_name, content:content, status:status==='0', invs:invs};
             }
             setinfos(infos_tmp);
             if(!type){
@@ -27,7 +36,25 @@ function Applicant(props){
                 let jobs_tmp = []
                 for(let i=0;i<n;i=i+1){
                     let {0:title, 1:description, 2:vacancy, 3:remain, 4:status} = await props.contract.methods.getJobContent(accounts[0],i).call();
-                    jobs_tmp[i] = {title:title, description:description, vacancy:vacancy, remain:remain, status:status==='0'?true:false};
+                    let active = {};//{app_addr:true/false}
+                    for(let j=0;j<infos_tmp.length;j=j+1){
+                        let res = await props.contract.methods.existActiveInv(infos_tmp[j].addr,accounts[0],i).call();
+                        //This part is used to handle cooldown bug
+                        let flag = true;
+                        infos_tmp[j].invs.forEach(e => {
+                            if(e.invApp===infos_tmp[j].addr && e.invCom===name && e.invJob===title){
+                                if(e.invTime+e.invDur>=Math.floor(+ new Date()/1000)){
+                                   flag = false;
+                                }
+                            }
+                        });
+                        if(flag){
+                            res = false;
+                        }
+                        //****************************************
+                        active[infos_tmp[j].addr] = res;
+                    }
+                    jobs_tmp[i] = {index:i, title:title, description:description, vacancy:vacancy, remain:remain, status:status==='0'?true:false, active:active};
                 }
                 setjobs(jobs_tmp);
             }
@@ -40,15 +67,17 @@ function Applicant(props){
     }
 
     const interview = async () => {
-        if(document.form.job_index.value!==""){
-            let msg = window.prompt("Please enter your message.","");
-            let job_index = parseInt(document.form.job_index.value,10);
-            if(msg!==null){
-                await props.contract.methods.sendInvitation(formstate.addr,job_index,msg,false).send({from:accounts[0]});
+        if(document.form.job_index){
+            if(document.form.job_index.value!==""){
+                let msg = window.prompt("Please enter your message.","");
+                let job_index = parseInt(document.form.job_index.value,10);
+                if(msg!==null){
+                    await props.contract.methods.sendInvitation(formstate.addr,job_index,msg,false).send({from:accounts[0]});
+                }
             }
-        }
-        else{
-            window.alert('Please select one job!')
+            else{
+                window.alert('Please select one job!')
+            }
         }
         setformstate({type:null,addr:null});
     }
@@ -102,7 +131,42 @@ function Applicant(props){
                                 <summary>Resume</summary>
                                 <h2>{e.content}</h2>
                             </details>
-                            {!type && e.status && jobs.length? 
+                            <details>
+                                <summary>History</summary>
+                                <h2>Interview Invitation(Waiting)</h2>
+                                {e.invs.filter(e => e.invStatus==='0' && !e.invDir && (Math.floor(+ new Date()/1000)<=e.invTime+e.invDur) ).map(e=>
+                                    <div>
+                                        <p>{e.invCom} invites the interview of job of {e.invJob}.</p>
+                                        <p>Msg: {e.invMsg}</p>
+                                        <p>----------------------------------------------------</p>
+                                    </div>
+                                )}
+                                <h2>Application Submitted(Waiting)</h2>
+                                {e.invs.filter(e => e.invStatus==='0' && e.invDir  && (Math.floor(+ new Date()/1000)<=e.invTime+e.invDur) ).map(e=>
+                                    <div>
+                                        <p>Apply for the job of {e.invJob} in {e.invCom}.</p>
+                                        <p>Msg: {e.invMsg}</p>
+                                        <p>----------------------------------------------------</p>
+                                    </div>
+                                )}
+                                <h2>Interview Invitation(Finished)</h2>
+                                {e.invs.filter(e => e.invStatus!=='0' && !e.invDir).map(e=>
+                                    <div>
+                                        {e.invStatus==='1'? <p>Accept {e.invCom}'s invitation to interview on the job of {e.invJob}.</p> : <p>Reject {e.invCom}'s invitation to interview on the job of {e.invJob}.</p>}
+                                        <p>Msg: {e.invMsg}</p>
+                                        <p>----------------------------------------------------</p>
+                                    </div>
+                                )}
+                                <h2>Application Submitted(Finished)</h2>
+                                {e.invs.filter(e => e.invStatus!=='0' && e.invDir).map(e=>
+                                    <div>
+                                        {e.invStatus==='1'? <p>{e.invCom} accepted application.</p> : <p>{e.invCom} rejected application.</p>}
+                                        <p>Msg: {e.invMsg}</p>
+                                        <p>----------------------------------------------------</p>
+                                    </div>    
+                                )}
+                            </details>
+                            {!type && e.status && jobs.filter(e=>e.status).length? 
                                 <div>
                                     <br></br>
                                     <button onClick={()=>setform("interview",infos[index].addr)}>Interview</button>
@@ -110,7 +174,7 @@ function Applicant(props){
                                     <button onClick={()=>setform("offer",infos[index].addr)}>offer</button>
                                 </div>:null
                             }
-                            <h2>----------------------------------------------------</h2>
+                            <h1>----------------------------------------------------</h1>
                         </div>
                     )}
                 </div>
@@ -119,10 +183,10 @@ function Applicant(props){
                     <div>
                         <form name="form">
                             <p>Select one job</p>
-                            {jobs.map((e,index)=>
+                            {jobs.filter(e=>e.status&&!e.active[formstate.addr]).map(e=>
                                 <div>
-                                    <input type="radio" id={index} name="job_index" value={index} required></input>
-                                    <label for={index}>{e.title}</label>
+                                    <input type="radio" id={e.index} name="job_index" value={e.index} required></input>
+                                    <label for={e.index}>{e.title}</label>
                                 </div>
                             )}
                             <br></br>

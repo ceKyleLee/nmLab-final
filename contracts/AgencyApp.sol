@@ -23,7 +23,7 @@ contract AgencyApp is ApplicantApp, CompanyApp  {
         uint idx;
         uint256 timestamp;
     }
-    uint256 constant invDeadline = 7 days;
+    uint256 constant invDeadline = 30 seconds;
 
 
     enum offerStatus{
@@ -84,7 +84,7 @@ contract AgencyApp is ApplicantApp, CompanyApp  {
             invTime = inv.timestamp;
             if (invApp== _applicant && 
                 invStatus== uint16(interStatus.wait) && 
-                invTime+invDeadline <= now ) {
+                invTime+invDeadline >= now ) {
                     return true;
             }
         }
@@ -197,9 +197,9 @@ contract AgencyApp is ApplicantApp, CompanyApp  {
     // View
     function getInvitationInfo(uint _invIdx) public view 
     returns (address _applicants, address _company, uint _jobIdx, 
-    string memory _msg, bool _dir, uint _status, uint256 _timestamp) {
+    string memory _msg, bool _dir, uint _status, uint256 _timestamp, uint256 _timedur) {
         Invitation storage inv = invitations[_invIdx];
-        return (inv.applicant, inv.company, inv.jobIdx, inv.message, inv.direction, uint(inv.status), inv.timestamp);
+        return (inv.applicant, inv.company, inv.jobIdx, inv.message, inv.direction, uint(inv.status), inv.timestamp, invDeadline);
     }
 
 
