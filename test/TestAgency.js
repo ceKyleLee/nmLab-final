@@ -8,11 +8,11 @@ contract("AgencyApp", accounts => {
             console.log("\nApplicant test...\n");
             const agencyApp = await AgencyApp.deployed();  
             
-            let isValid = await agencyApp.isAccount.call(accounts[0]);  
+            let isValid = await agencyApp.isRegistered.call(accounts[0]);  
             console.log("Before register... ", isValid);
             agencyApp.addAcc("test", true, {from: accounts[0]});
 
-            let isValid_after = await agencyApp.isAccount.call(accounts[0]);  
+            let isValid_after = await agencyApp.isRegistered.call(accounts[0]);  
             console.log("After register... ", isValid_after);
             let {0: name, 1: content, 2: type} = await agencyApp.getAddrInfo.call(accounts[0]);
             console.log("Name:", name);
@@ -23,7 +23,7 @@ contract("AgencyApp", accounts => {
             console.log("Name:", _name);
             console.log("Content:", new_content);
             console.log("Acc type:", _type);
-            await agencyApp.updateApplicantStatus(1, {from: accounts[0]});
+            await agencyApp.updateApplicantStatus(0, {from: accounts[0]});
             let applicantNum = await agencyApp.getApplicantsNum.call();
             console.log("Total number: ", applicantNum);
             let addr1 = await agencyApp.getApplicantAddr.call(applicantNum-1);
@@ -48,8 +48,8 @@ contract("AgencyApp", accounts => {
         console.log("Total number: ", companyNum);
         let addr1 = await agencyApp.getCompanyAddr.call(companyNum-1);
         console.log("Addr: ", addr1);
-        await agencyApp.AddCompanyJob(
-            "First job", "I don't care.",  5, {from: accounts[1]}
+        await agencyApp.AddJob(
+            "First job", "I don't care.", 5, {from: accounts[1]}
         );
         let jobNum = await agencyApp.getCompanyJobNum.call(accounts[1]);
         let {0: title0, 1: description0, 2: number0, 3: remain0, 4: status0} = 
@@ -58,8 +58,8 @@ contract("AgencyApp", accounts => {
         console.log("Description:", description0);
         console.log("Number/Remain:", number0, "/", remain0);
         console.log("Status:", status0);
-        await agencyApp.updateJobStatus(jobNum-1, 1, {from: accounts[1]});
-        await agencyApp.UpdateJob(jobNum-1, "Not First job", "I do care.", 3, {from: accounts[1]});
+        await agencyApp.updateJobStatus(jobNum-1, 0, {from: accounts[1]});
+        await agencyApp.updateJob(jobNum-1, "Not First job", "I do care.", 3, {from: accounts[1]});
         let {0: title1, 1: description1, 2: number1, 3: remain1, 4: status1} = 
             await agencyApp.getJobContent.call(addr1, jobNum-1);
         console.log("Job:", title1);
@@ -102,7 +102,7 @@ contract("AgencyApp", accounts => {
         }
         await timeout(1000);
         await agencyApp.updateInvitationStatus(jobInvIdx, 1, {from: applicantAddr});
-        let {0: invApp1, 1: invCom1, 2: invJob1, 3: invMsg1, 4: invDir1, 5:invStatus1, 6: invTime1} = 
+        let {0: invApp1, 1: invCom1, 2: invJob1, 3: invMsg1, 4: invDir1, 5:invStatus1, 6: invTime1, 7: expire1} = 
             await agencyApp.getInvitationInfo.call(jobInvIdx);
             console.log("Applicant:", invApp1);
             console.log("Company:", invCom1);
@@ -111,6 +111,7 @@ contract("AgencyApp", accounts => {
             console.log("Direction:", invDir1);
             console.log("Status:", invStatus1);
             console.log("Timestamp:", invTime1);
+            console.log("Expire:", expire1);
     });  
 });  
 
