@@ -6,7 +6,7 @@ function Signup (props){
             if(document.form.username.value!=="" && document.form.account_type.value!==""){
                 let value = document.form.account_type.value === "true" ? true : false;
                 await props.contract.methods.addAcc(document.form.username.value,value).send({from:accounts[0]});
-                let valid = await props.contract.methods.isAccount(accounts[0]).call();
+                let valid = await props.contract.methods.isRegistered(accounts[0]).call();
                 props.validate(valid);
             }
             else{

@@ -28,7 +28,7 @@ function Job(props){
         let yes = window.confirm('Are you sure to add the job?');
         if(yes){
             if(document.form.title.value!=="" && document.form.vacancy.value!=="" && document.getElementsByTagName("textarea")[0].value!==""){
-                await props.contract.methods.AddCompanyJob(document.form.title.value,document.getElementsByTagName("textarea")[0].value,document.form.vacancy.value).send({from:accounts[0]});
+                await props.contract.methods.AddJob(document.form.title.value,document.getElementsByTagName("textarea")[0].value,document.form.vacancy.value).send({from:accounts[0]});
                 document.form.title.value = "";
                 document.form.vacancy.value = "";
                 document.getElementsByTagName("textarea")[0].value = "";
@@ -43,7 +43,7 @@ function Job(props){
         let yes = window.confirm('Are you sure to update the job?');
         if(yes){
             if(document.form.title.value!=="" && document.form.vacancy.value!=="" && document.getElementsByTagName("textarea")[0].value!==""){
-                await props.contract.methods.UpdateJob(index,document.form.title.value,document.getElementsByTagName("textarea")[0].value,document.form.vacancy.value).send({from:accounts[0]});
+                await props.contract.methods.updateJob(index,document.form.title.value,document.getElementsByTagName("textarea")[0].value,document.form.vacancy.value).send({from:accounts[0]});
                 setmodify(false);
                 setindex(null);
             }

@@ -22,7 +22,7 @@ class App extends React.Component {
         AgencyAppContract.abi,
         deployedNetwork && deployedNetwork.address,
       );
-      const valid = await instance.methods.isAccount(accounts[0]).call();
+      const valid = await instance.methods.isRegistered(accounts[0]).call();
       this.setState({ web3, accounts, contract: instance, valid: valid});
     } catch (error) {
       alert(
