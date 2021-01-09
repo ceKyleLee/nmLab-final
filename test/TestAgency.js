@@ -1,118 +1,217 @@
 const AgencyApp = artifacts.require("./AgencyApp.sol");
-// AgencyApp.events.OnAccountAdd().on("data", function(event) {
-    // console.log("Event", event.returnValues.userAddr);
-// }).on("error", console.error);
 
 contract("AgencyApp", accounts => {  
-        it("Applicant Account Test", async () => {  
-            console.log("\nApplicant test...\n");
+    it("Applicant Account Test", async () => {  
+            console.log("\n...Applicant test...\n");
             const agencyApp = await AgencyApp.deployed();  
-            
-            let isValid = await agencyApp.isRegistered.call(accounts[0]);  
+            // Register Accout
+            var isValid = await agencyApp.isRegistered.call(accounts[0]);  
             console.log("Before register... ", isValid);
-            agencyApp.addAcc("test", true, {from: accounts[0]});
+            agencyApp.addAcc("Applicant1", true, {from: accounts[0]});
+            isValid = await agencyApp.isRegistered.call(accounts[0]);  
+            console.log("After register... ", isValid);
 
-            let isValid_after = await agencyApp.isRegistered.call(accounts[0]);  
-            console.log("After register... ", isValid_after);
-            let {0: name, 1: content, 2: type} = await agencyApp.getAddrInfo.call(accounts[0]);
-            console.log("Name:", name);
-            console.log("Content:", content);
-            console.log("Acc type:", type);
-            agencyApp.updataAccContent("new content", true, {from: accounts[0]});
-            let {0: _name, 1: new_content, 2: _type} = await agencyApp.getAddrInfo(accounts[0]);
-            console.log("Name:", _name);
-            console.log("Content:", new_content);
-            console.log("Acc type:", _type);
+            // Update and retrieve account info
+            var content = await agencyApp.getAddrInfo.call(accounts[0]);
+            var status = await agencyApp.getApplicantStatus.call(accounts[0]);
+            console.log("Content: ", content);
+            console.log("Status:", status);
+            await agencyApp.updataAccContent("new content", true, {from: accounts[0]});
             await agencyApp.updateApplicantStatus(0, {from: accounts[0]});
-            let applicantNum = await agencyApp.getApplicantsNum.call();
-            console.log("Total number: ", applicantNum);
-            let addr1 = await agencyApp.getApplicantAddr.call(applicantNum-1);
-            let {0: name1, 1: content1, 2: type1} = await agencyApp.getAddrInfo.call(addr1);
-            let status1 = await agencyApp.getApplicantStatus.call(addr1);
-            console.log("Name:", name1);
-            console.log("Content:", content1);
-            console.log("Acc type:", type1);
-            console.log("Status:", status1);
+            status = await agencyApp.getApplicantStatus.call(accounts[0]);
+            content = await agencyApp.getAddrInfo(accounts[0]);
+            console.log("===After update===");
+            console.log("Content: ", content);
+            console.log("Status:", status);
+
+
+            // Retrieve applicant address
+            var applicantNum = await agencyApp.getApplicantsNum.call();
+            console.log("Total applicant number: ", applicantNum);
+            var addr1 = await agencyApp.getApplicantAddr.call(applicantNum-1);
+            console.log("From ganache:  ", accounts[0]);
+            console.log("From contract: ", addr1);
     });  
 
     it("Company Account Test",  async () => {  
-        console.log("\nCompany test...\n");
+        console.log("\n...Company test...\n");
         const agencyApp = await AgencyApp.deployed();  
+        
+        // Register Accout
         await agencyApp.addAcc("Company1", false, {from: accounts[1]});
         await agencyApp.updataAccContent("new content", false, {from: accounts[1]});
-        let {0: name, 1: content, 2: type} = await agencyApp.getAddrInfo.call(accounts[1]);
-        console.log("Name:", name);
+        var content = await agencyApp.getAddrInfo.call(accounts[1]);
         console.log("Content:", content);
-        console.log("Acc type:", type);
-        let companyNum = await agencyApp.getCompanyNum.call();
-        console.log("Total number: ", companyNum);
-        let addr1 = await agencyApp.getCompanyAddr.call(companyNum-1);
-        console.log("Addr: ", addr1);
+
+        // Retrieve Company address
+        var companyNum = await agencyApp.getCompanyNum.call();
+        console.log("Total company number: ", companyNum);
+        var addr = await agencyApp.getCompanyAddr.call(companyNum-1);
+        console.log("From ganache:  ", accounts[1]);
+        console.log("From contract: ", addr);
+
+
+        // Add job
         await agencyApp.AddJob(
             "First job", "I don't care.", 5, {from: accounts[1]}
         );
-        let jobNum = await agencyApp.getCompanyJobNum.call(accounts[1]);
-        let {0: title0, 1: description0, 2: number0, 3: remain0, 4: status0} = 
-            await agencyApp.getJobContent.call(addr1, jobNum-1);
-        console.log("Job:", title0);
-        console.log("Description:", description0);
-        console.log("Number/Remain:", number0, "/", remain0);
-        console.log("Status:", status0);
-        await agencyApp.updateJobStatus(jobNum-1, 0, {from: accounts[1]});
-        await agencyApp.updateJob(jobNum-1, "Not First job", "I do care.", 3, {from: accounts[1]});
-        let {0: title1, 1: description1, 2: number1, 3: remain1, 4: status1} = 
-            await agencyApp.getJobContent.call(addr1, jobNum-1);
-        console.log("Job:", title1);
-        console.log("Description:", description1);
-        console.log("Number/Remain:", number1, "/", remain1);
-        console.log("Status:", status1);
+        var jobNum = await agencyApp.getCompanyJobNum.call(accounts[1]);
+        content = await agencyApp.getJobContent.call(addr, jobNum-1);
+        console.log("Job Content:", content);
 
+        // Update Job
+        console.log("===After update===");
+        // await agencyApp.updateJobStatus(jobNum-1, 1, {from: accounts[1]});
+        await agencyApp.updateJob(jobNum-1, "Not First job", "I do care.", 3, {from: accounts[1]});
+        content = await agencyApp.getJobContent.call(addr, jobNum-1);
+        console.log("Job Num:", jobNum);
+        console.log("Job Content:", content);
     });  
 
     it("Invitation test",  async () => {  
-        console.log("\nInvitation test...\n");
+        console.log("\n...Invitation test...\n");
         const agencyApp = await AgencyApp.deployed();  
-        let applicantAddr = accounts[0];
-        let companyAddr = accounts[1];
-        let jobIdx = await agencyApp.getCompanyJobNum.call(companyAddr)-1;
+        var applicantAddr = accounts[0];
+        var companyAddr = accounts[1];
+        var jobIdx = await agencyApp.getCompanyJobNum.call(companyAddr)-1;
+
+        // Send Invitation
         await agencyApp.sendInvitation(
             applicantAddr, jobIdx, "First invitation.", false,
             {from: companyAddr}
         );
 
-        let jobInvNum = await agencyApp.getJobInvNum.call(companyAddr, jobIdx);
-        let jobInvIdx = await agencyApp.getJobInvIdx.call(companyAddr, jobIdx, jobInvNum-1);
-        let appInvNum = await agencyApp.getApplincantInvNum.call(applicantAddr);
-        let appInvIdx = await agencyApp.getApplincantInvIdx.call(applicantAddr, appInvNum-1);
-        console.log("Job inv num: ", jobInvNum, " idx: ", jobInvIdx);
-        console.log("App inv num: ", appInvNum, " idx: ", appInvIdx);
+        // Check inv info from job and applicant
+        var jobInvNum = await agencyApp.getJobInvNum.call(companyAddr, jobIdx);
+        var jobInvIdx = await agencyApp.getJobInvIdx.call(companyAddr, jobIdx, jobInvNum-1);
+        var appInvNum = await agencyApp.getApplincantInvNum.call(applicantAddr);
+        var appInvIdx = await agencyApp.getApplincantInvIdx.call(applicantAddr, appInvNum-1);
+        console.log("Job inv idx: ", jobInvIdx);
+        console.log("App inv idx: ", appInvIdx);
 
-        let {0: invApp, 1: invCom, 2: invJob, 3: invMsg, 4: invDir, 5:invStatus, 6: invTime} = 
-            await agencyApp.getInvitationInfo.call(jobInvIdx);
-            console.log("Applicant:", invApp);
-            console.log("Company:", invCom);
-            console.log("JobIdx:", invJob);
-            console.log("Message:", invMsg);
-            console.log("Direction:", invDir);
-            console.log("Status:", invStatus);
-            console.log("Timestamp:", invTime);
+        // Retrieve invitation info
+        var content = await agencyApp.getInvitationInfo.call(jobInvIdx);
+        console.log("Invitation content: ", content);
 
+        // Exist invitation test
+        // await agencyApp.sendInvitation(
+        //     companyAddr, jobIdx, "Second invitation.", true,
+        //     {from: applicantAddr}
+        // );
+        // await agencyApp.sendInvitation(
+        //     applicantAddr, jobIdx, "First invitation.", false,
+        //     {from: companyAddr}
+        // );
+
+
+        // Expiration Test
         function timeout(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
         await timeout(1000);
         await agencyApp.updateInvitationStatus(jobInvIdx, 1, {from: applicantAddr});
-        let {0: invApp1, 1: invCom1, 2: invJob1, 3: invMsg1, 4: invDir1, 5:invStatus1, 6: invTime1, 7: expire1} = 
-            await agencyApp.getInvitationInfo.call(jobInvIdx);
-            console.log("Applicant:", invApp1);
-            console.log("Company:", invCom1);
-            console.log("JobIdx:", invJob1);
-            console.log("Message:", invMsg1);
-            console.log("Direction:", invDir1);
-            console.log("Status:", invStatus1);
-            console.log("Timestamp:", invTime1);
-            console.log("Expire:", expire1);
+        var content = await agencyApp.getInvitationInfo.call(jobInvIdx);
+        console.log("Invitation content: ", content);
+
+        // Lock invitation Test
+        // await agencyApp.updateInvitationStatus(jobInvIdx, 2, {from: applicantAddr});
+        // var content = await agencyApp.getInvitationInfo.call(jobInvIdx);
+        // console.log("Invitation content: ", content);
+
+        // New invitation Test
+        await agencyApp.sendInvitation(
+            companyAddr, jobIdx, "Second invitation.", true,
+            {from: applicantAddr}
+        );
+        jobInvNum = await agencyApp.getJobInvNum.call(companyAddr, jobIdx);
+        jobInvIdx = await agencyApp.getJobInvIdx.call(companyAddr, jobIdx, jobInvNum-1);
+        console.log("Job inv idx: ", jobInvIdx);
+        content = await agencyApp.getInvitationInfo.call(jobInvIdx);
+        console.log("Invitation content: ", content);
     });  
+
+    it("Offer Test", async () => {  
+        console.log("\n...Offer test...\n");
+        const agencyApp = await AgencyApp.deployed();  
+        var applicantAddr = accounts[0];
+        var companyAddr = accounts[1];
+        var jobIdx = await agencyApp.getCompanyJobNum.call(companyAddr)-1;
+
+        // Send Offer
+        await agencyApp.sendOffer(
+            applicantAddr, jobIdx, 1000, "First offer.", 
+            {from: companyAddr}
+        );
+
+        // Check inv info from job and applicant
+        var jobOffNum = await agencyApp.getJobOffNum.call(companyAddr, jobIdx);
+        var jobOffIdx = await agencyApp.getJobOffIdx.call(companyAddr, jobIdx, jobOffNum-1);
+        var appOffNum = await agencyApp.getApplincantOffNum.call(applicantAddr);
+        var appOffIdx = await agencyApp.getApplincantOffIdx.call(applicantAddr, appOffNum-1);
+        console.log("Job offer idx: ", jobOffIdx);
+        console.log("App offer idx: ", appOffIdx);
+
+        // Retrieve offer info
+        var content = await agencyApp.getOfferInfo.call(jobOffIdx);
+        console.log("Offer Content: ", content);
+
+        // Exist offer Test
+        // await agencyApp.sendOffer(
+            // applicantAddr, jobIdx, 2000, "Second offer.", 
+            // {from: companyAddr}
+        // );
+        // jobOffNum = await agencyApp.getJobInvNum.call(companyAddr, jobIdx);
+        // jobOffIdx = await agencyApp.getJobInvIdx.call(companyAddr, jobIdx, jobOffNum-1);
+        // console.log("Job offer idx: ", jobOffIdx);
+        // content = await agencyApp.getOfferInfo.call(jobOffIdx);
+        // console.log("Offer Content: ", content);
+        
+        // Cool down Test
+        function timeout(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        // await timeout(3000);
+        await agencyApp.updateOfferPayment(jobOffIdx, 4000, {from: companyAddr});
+
+        content = await agencyApp.getOfferInfo.call(jobOffIdx);
+        console.log("Offer Content: ", content);
+
+        // Second company offer
+        var company2Addr = accounts[2];
+        await agencyApp.addAcc("Company2", false, {from: company2Addr});
+        await agencyApp.AddJob(
+            "Second job", "I don't care.", 5, {from: company2Addr}
+        );
+        var job2Idx = await agencyApp.getCompanyJobNum.call(company2Addr)-1;
+        await agencyApp.sendOffer(
+            applicantAddr, job2Idx, 2000, "Second offer.", 
+            {from: company2Addr}
+        );
+        var job2OffNum = await agencyApp.getJobOffNum.call(company2Addr, job2Idx);
+        var job2OffIdx = await agencyApp.getJobOffIdx.call(company2Addr, job2Idx, job2OffNum-1);
+
+
+        // Applicant update status
+        await agencyApp.updateOfferStatus(jobOffIdx, 2, {from: applicantAddr});
+        content = await agencyApp.getOfferInfo.call(jobOffIdx);
+        console.log("Offer Content: ", content);
+        await agencyApp.updateOfferPayment(jobOffIdx, 3000, {from: companyAddr});
+        await agencyApp.updateOfferStatus(jobOffIdx, 1, {from: applicantAddr});
+        content = await agencyApp.getJobContent.call(companyAddr, jobIdx);
+        console.log("First Job content: ", content);
+        content = await agencyApp.getJobContent.call(company2Addr, job2Idx);
+        console.log("Second Job content: ", content);
+        content = await agencyApp.getOfferInfo.call(jobOffIdx);
+        console.log("First offer content: ", content);
+        content = await agencyApp.getOfferInfo.call(job2OffIdx);
+        console.log("Second offer content: ", content);
+
+        // Close offer Test
+        // await agencyApp.updateOfferPayment(jobOff2Idx, 3000,  {from: company2Addr});
+
+    
+    });  
+
 });  
 
 
