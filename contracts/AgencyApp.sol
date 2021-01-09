@@ -195,8 +195,8 @@ contract AgencyApp is ApplicantApp, CompanyApp  {
         uint256 createTime;
         uint256 updateTime;
     }
-    uint256 constant off_Expire   = 14 days;
-    uint256 constant off_Cooldown = 1 days;
+    uint256 constant off_Expire   = 1 seconds;
+    uint256 constant off_Cooldown = 1 seconds;
 
     Offer[] offers;
 
@@ -208,7 +208,7 @@ contract AgencyApp is ApplicantApp, CompanyApp  {
         // require(isExpired(_offer.createTime, off_Expire), "Offer is expired!");
         require((offers[_offIdx].App == _addr));
         require((offers[_offIdx].Status == uint16(OffStatus.Open)));
-        require(isExpired(offers[_offIdx].createTime, off_Expire));
+        require(!isExpired(offers[_offIdx].createTime, off_Expire));
 
         _;
     }
@@ -221,7 +221,7 @@ contract AgencyApp is ApplicantApp, CompanyApp  {
         // require(!inCoolDown(_offer.updateTime, off_Cooldown), "Offer is in cool down!");
         require((offers[_offIdx].Com == _addr));
         require((offers[_offIdx].Status == uint16(OffStatus.Open) || offers[_offIdx].Status == uint16(OffStatus.Reject)));
-        require(isExpired(offers[_offIdx].createTime, off_Expire));
+        require(!isExpired(offers[_offIdx].createTime, off_Expire));
         require(!inCoolDown(offers[_offIdx].updateTime, off_Cooldown));
         _;
     }
@@ -249,7 +249,7 @@ contract AgencyApp is ApplicantApp, CompanyApp  {
     function isActiveOffer(Offer memory _offer) internal view returns(bool) {
         if (((_offer.Status == uint16(OffStatus.Open))
             || (_offer.Status == uint16(OffStatus.Reject))) && 
-            isExpired(_offer.createTime, off_Expire) ) {
+            !isExpired(_offer.createTime, off_Expire) ) {
             return true;
         }
         return false;
@@ -284,10 +284,10 @@ contract AgencyApp is ApplicantApp, CompanyApp  {
         require(!canSendOffer(_appAddr, _comAddr, _jobIdx));
         require((_applicant.Status == uint16(AppStatus.Open)));
         require((_job.Status == uint16(JobStatus.Open)));
-        require((_job.Employee.length >= _job.Number));
+        require((_job.Employee.length <= _job.Number));
 
         uint sendedOfferNum = getJobActiveOfferNum(_job);
-        require((sendedOfferNum >= (_job.Number - _job.Employee.length)));
+        require((sendedOfferNum <= (_job.Number - _job.Employee.length)));
 
         Offer memory new_offer = Offer({
             Payment: _payment,
@@ -336,6 +336,7 @@ contract AgencyApp is ApplicantApp, CompanyApp  {
     ValidIdx(offers.length, _offIdx) COMModifiableOff(_offIdx, msg.sender) {
         Offer storage _offer = offers[_offIdx];
         _offer.Payment = _newPayment;
+        _offer.Status = uint16(OffStatus.Open);
 
         emit OnOfferUpdate(_offer.App, _offer.Com, _offer.JobIdx, _offer.Payment, _offer.Status);
     }
