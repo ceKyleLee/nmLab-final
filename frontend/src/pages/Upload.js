@@ -33,9 +33,9 @@ function Upload(props){
 
     return (
         <div className="App">
-            <div className="header">
-                <h1>去中心化人力銀行</h1>
-                <h3>Username:{name}&nbsp;&nbsp;&nbsp;&nbsp;Account Type:{type? "Personal":"Company"}</h3>
+            <div>
+                <h1 className="title1">Decentralized Employment Agency</h1>
+                <h3 className="title2">Username:{name}&nbsp;&nbsp;&nbsp;&nbsp;Account Type:{type? "Personal":"Company"}</h3>
             </div>
             <div className="body">
                 <div className="nav">
@@ -51,10 +51,10 @@ function Upload(props){
                 </div>
                 <div className="left-box">
                     <textarea className="context-input" maxLength="400" placeholder={type? "type your resume...":"type company introduction..."} required></textarea>
-                    <button className="context-submit" onClick={submit}>submit</button>
+                    <button class="w3-btn w3-blue w3-xlarge" onClick={submit}>submit</button>
                 </div>
                 <div className="right-box">
-                    <p className="context-output">{text}</p>
+                    <p className="profile-context">{text}</p>
                 </div>
             </div>
         </div>

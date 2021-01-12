@@ -74,9 +74,9 @@ function Job(props){
 
     return(
         <div className="App">
-            <div className="header">
-                <h1>去中心化人力銀行</h1>
-                <h3>Username:{name}&nbsp;&nbsp;&nbsp;&nbsp;Account Type:{type? "Personal":"Company"}</h3>
+            <div>
+                <h1 className="title1">Decentralized Employment Agency</h1>
+                <h3 className="title2">Username:{name}&nbsp;&nbsp;&nbsp;&nbsp;Account Type:{type? "Personal":"Company"}</h3>
             </div>
             <div className="body">
                 <div className="nav">
@@ -91,8 +91,8 @@ function Job(props){
                     </nav>
                 </div>
                 <div className="left-box">
-                    <h1>{modify? "Modify an exist job":"Add a new job"}</h1>
-                    <form name="form">
+                    <form name="form" className="job-form">
+                        <h1>{modify? "Modify an exist job":"Add a new job"}</h1>
                         <label>Title: </label>
                         <input type="text" name="title" defaultValue={modify? jobs[index].title:""} autoFocus required/>
                         &nbsp;&nbsp;&nbsp;&nbsp;
@@ -100,26 +100,25 @@ function Job(props){
                         <input type="number" name="vacancy" required/>
                         <br></br>
                         <br></br>
-                        <textarea cols="50" rows="25" defaultValue={modify? jobs[index].description:""} placeholder="Job description..." required></textarea>
+                        <textarea className="job-description" maxLength="400" defaultValue={modify? jobs[index].description:""} placeholder="Job description..." required></textarea>
                     </form>
                     {modify?
                         <div> 
-                        <button onClick={()=>updatejob()}>Update</button>
+                        <button class="w3-btn w3-pink" onClick={()=>updatejob()}>Update</button>
                         &nbsp;&nbsp;&nbsp;&nbsp;
-                        <button onClick={()=>quitmodify()}>Quit</button>
-                        </div>:<button onClick={()=>addjob()}>ADD</button>
+                        <button class="w3-btn w3-pink" onClick={()=>quitmodify()}>Quit</button>
+                        </div>:<button class="w3-btn w3-pink" onClick={()=>addjob()}>ADD</button>
                     }
                 </div>
                 <div className="right-box">
                     {jobs.map((e,index)=>
-                        <div>
+                        <div className="jobs">
                             <h1>{e.title}</h1>
-                            <h2>Vacancy: {e.vacancy}&nbsp;&nbsp;&nbsp;&nbsp;Remain: {e.remain}&nbsp;&nbsp;&nbsp;&nbsp;Status: <span className="dot" style={e.status? {backgroundColor:"green"}:{backgroundColor:"red"}}></span></h2>
-                            <h3>Description:{e.description}</h3>
-                            <button onClick={()=>entermodify(index)}>Modify</button>
+                            <h3>Vacancy: {e.vacancy}&nbsp;&nbsp;&nbsp;&nbsp;Remain: {e.remain}&nbsp;&nbsp;&nbsp;&nbsp;Status: <span className="dot" style={e.status? {backgroundColor:"green"}:{backgroundColor:"red"}}></span></h3>
+                            <p>Description:{e.description}</p>
+                            <button class="w3-btn w3-pink" onClick={()=>entermodify(index)}>Modify</button>
                             &nbsp;&nbsp;&nbsp;&nbsp;
-                            <button onClick={()=>changeStatus(index)}>{e.status? "Close job":"Open job"}</button>
-                            <h2>----------------------------------------------------</h2>
+                            <button class="w3-btn w3-pink" onClick={()=>changeStatus(index)}>{e.status? "Close job":"Open job"}</button>
                         </div>
                     )}
                 </div>

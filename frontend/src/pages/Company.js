@@ -69,9 +69,9 @@ function Company(props){
 
     return(
         <div className="App">
-            <div className="header">
-                <h1>去中心化人力銀行</h1>
-                <h3>Username:{name}&nbsp;&nbsp;&nbsp;&nbsp;Account Type:{type? "Personal":"Company"}</h3>
+            <div>
+                <h1 className="title1">Decentralized Employment Agency</h1>
+                <h3 className="title2">Username:{name}&nbsp;&nbsp;&nbsp;&nbsp;Account Type:{type? "Personal":"Company"}</h3>
             </div>
             <div className="body">
                 <div className="nav">
@@ -87,70 +87,64 @@ function Company(props){
                 </div>
                 <div className="major-box">
                     {infos.map(e=>
-                        <div>
+                        <div className="jobs">
                             <h1>{e.name}</h1>
-                            <details>
+                            <details className="history">
                                 <summary>Introduction</summary>
                                 <h2>{e.content}</h2>
                             </details>
-                            <details>
+                            <details className="history">
                                 <summary>Job List</summary>
                                 {e.jobs.map((j,index)=>
-                                    <div>
-                                        <h2>{j.title}&nbsp;&nbsp;&nbsp;&nbsp;{type&&j.status&&status&&!j.active? <button onClick={()=>apply(e.addr,index)}>Apply</button>:null}</h2>
-                                        <h2>Vacancy: {j.vacancy}&nbsp;&nbsp;&nbsp;&nbsp;Remain: {j.remain}&nbsp;&nbsp;&nbsp;&nbsp;Status: <span className="dot" style={j.status? {backgroundColor:"green"}:{backgroundColor:"red"}}></span></h2>
-                                        <h3>Description: {j.description}</h3>
-                                        <details>
+                                    <div className="jobs">
+                                        <h2>{j.title}&nbsp;&nbsp;&nbsp;&nbsp;{type&&j.status&&status&&!j.active? <button class="w3-button w3-medium w3-blue w3-round-large" onClick={()=>apply(e.addr,index)}>Apply</button>:null}</h2>
+                                        <h3>Vacancy: {j.vacancy}&nbsp;&nbsp;&nbsp;&nbsp;Remain: {j.remain}&nbsp;&nbsp;&nbsp;&nbsp;Status: <span className="dot" style={j.status? {backgroundColor:"green"}:{backgroundColor:"red"}}></span></h3>
+                                        <h4>Description: {j.description}</h4>
+                                        <details className="history">
                                             <summary>Application Recieved(Waiting)</summary>
                                             {j.invs.filter(i => i.invStatus==='0' && i.invDir && (Math.floor(+ new Date()/1000)<=i.invTime+i.invDur) ).map(i=>
-                                                <div>
+                                                <div className="section">
                                                     <p>{i.invApp} apply to this job.</p>
                                                     <p>Msg: {i.invMsg}</p>
-                                                    <p>----------------------------------------------------</p>
                                                 </div>
                                             )}
                                         </details>
-                                        <details>
+                                        <details className="history">
                                             <summary>Interview Invatation Sent(Waiting)</summary>
                                             {j.invs.filter(i => i.invStatus==='0' && !i.invDir  && (Math.floor(+ new Date()/1000)<=i.invTime+i.invDur) ).map(i=>
-                                                <div>
+                                                <div className="section">
                                                     <p>Invite {i.invApp} to interview.</p>
                                                     <p>Msg: {i.invMsg}</p>
-                                                    <p>----------------------------------------------------</p>
                                                 </div>
                                             )}
                                         </details>
-                                        <details>
+                                        <details className="history">
                                             <summary>Application Recieved(Finished)</summary>
                                             {j.invs.filter(i => i.invStatus!=='0' && i.invDir).map(i=>
-                                                <div>
+                                                <div className="section">
                                                     {i.invStatus==='1'? <p>Accept {i.invApp}'s application.</p> : <p>Reject {i.invApp}'s application.</p>}
                                                     <p>Msg: {i.invMsg}</p>
-                                                    <p>----------------------------------------------------</p>
                                                 </div>
                                             )}
                                         </details>
-                                        <details>
+                                        <details className="history">
                                             <summary>Interview Invatation Sent(Finished)</summary>
                                             {j.invs.filter(i => i.invStatus!=='0' && !i.invDir).map(i=>
-                                                <div>
+                                                <div className="section">
                                                     {i.invStatus==='1'? <p>{i.invApp} accepted your invitation to interview.</p> : <p>{i.invApp} rejected your invitation to interview.</p>}
                                                     <p>Msg: {i.invMsg}</p>
-                                                    <p>----------------------------------------------------</p>
                                                 </div>
                                             )}
                                         </details>
-                                        <h2>----------------------------------------------------</h2>
                                     </div>
                                 )}
                             </details>
-                            <h1>----------------------------------------------------</h1>
                         </div>
                     )}
                 </div>
                 <div className="minor-box">
                     {type?
-                        <div>
+                        <div className="status">
                             <h2>Status:&nbsp;&nbsp;<span className="dot" style={status? {backgroundColor:"green"}:{backgroundColor:"red"}}></span></h2>
                         </div>:null
                     }

@@ -1,4 +1,5 @@
 import './App.css';
+import 'w3-css/w3.css';
 import React from 'react';
 import getWeb3 from "./utils/getWeb3";
 import AgencyAppContract from "./build/contracts/AgencyApp.json"

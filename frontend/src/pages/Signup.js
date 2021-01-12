@@ -17,24 +17,26 @@ function Signup (props){
 
     return (
         <div className="App">
-            <h1>Register a New Account</h1>
-            <br></br>
-            <form name="form">
-                <label>Username: </label>
-                <input type="text" name="username" autoFocus required/>
-                <br></br>
-                <p>(The username is just for convenient usage, the real account will be built automatically by your ethereum address)</p>
-                <br></br>
-                <p>Please select one of account type</p>
-                <input type="radio" id="personal" name="account_type" value="true" required></input>
-                <label for="personal">Personal Account</label>
-                &nbsp;&nbsp;&nbsp;&nbsp;
-                <input type="radio" id="company" name="account_type" value="false" required></input>
-                <label for="company">Company Account</label>
-                <br></br>
-                <br></br>
-            </form>
-            <button onClick={()=>submit()}>Submit</button>
+            <div className="Signup">
+                <form name="form" class="w3-container w3-card-4">
+                    <h1 class="w3-text-blue">Register a New Account</h1>
+                    <br></br>
+                    <label for="username" class="w3-text-blue">Username: </label>
+                    <input id="username" type="text" name="username" autoFocus required/>
+                    <br></br>
+                    <p class="w3-text-gray">(The username is just for convenient usage, the real account will be built automatically by your ethereum address)</p>
+                    <br></br>
+                    <p class="w3-text-blue">Please select one of account type</p>
+                    <input type="radio" class="w3-radio" id="personal" name="account_type" value="true" required></input>
+                    <label for="personal"> Personal Account</label>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="radio" class="w3-radio" id="company" name="account_type" value="false" required></input>
+                    <label for="company"> Company Account</label>
+                    <br></br>
+                    <br></br>
+                </form>
+                <button class="w3-btn w3-blue" onClick={submit}>Register</button>
+            </div>
         </div>
     );
 }

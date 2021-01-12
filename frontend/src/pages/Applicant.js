@@ -107,9 +107,9 @@ function Applicant(props){
 
     return(
         <div className="App">
-            <div className="header">
-                <h1>去中心化人力銀行</h1>
-                <h3>Username:{name}&nbsp;&nbsp;&nbsp;&nbsp;Account Type:{type? "Personal":"Company"}</h3>
+            <div>
+                <h1 className="title1">Decentralized Employment Agency</h1>
+                <h3 className="title2">Username:{name}&nbsp;&nbsp;&nbsp;&nbsp;Account Type:{type? "Personal":"Company"}</h3>
             </div>
             <div className="body">
                 <div className="nav">
@@ -125,76 +125,78 @@ function Applicant(props){
                 </div>
                 <div className="major-box">
                     {infos.map((e,index)=>
-                        <div>
+                        <div className="status">
                             <h1>{e.name}&nbsp;&nbsp;&nbsp;&nbsp;Status: <span className="dot" style={e.status? {backgroundColor:"green"}:{backgroundColor:"red"}}></span></h1>
-                            <details>
+                            <details className="history">
                                 <summary>Resume</summary>
                                 <h2>{e.content}</h2>
                             </details>
-                            <details>
+                            <details className="history">
                                 <summary>History</summary>
-                                <h2>Interview Invitation(Waiting)</h2>
-                                {e.invs.filter(e => e.invStatus==='0' && !e.invDir && (Math.floor(+ new Date()/1000)<=e.invTime+e.invDur) ).map(e=>
-                                    <div>
-                                        <p>{e.invCom} invites the interview of job of {e.invJob}.</p>
-                                        <p>Msg: {e.invMsg}</p>
-                                        <p>----------------------------------------------------</p>
-                                    </div>
-                                )}
-                                <h2>Application Submitted(Waiting)</h2>
-                                {e.invs.filter(e => e.invStatus==='0' && e.invDir  && (Math.floor(+ new Date()/1000)<=e.invTime+e.invDur) ).map(e=>
-                                    <div>
-                                        <p>Apply for the job of {e.invJob} in {e.invCom}.</p>
-                                        <p>Msg: {e.invMsg}</p>
-                                        <p>----------------------------------------------------</p>
-                                    </div>
-                                )}
-                                <h2>Interview Invitation(Finished)</h2>
-                                {e.invs.filter(e => e.invStatus!=='0' && !e.invDir).map(e=>
-                                    <div>
-                                        {e.invStatus==='1'? <p>Accept {e.invCom}'s invitation to interview on the job of {e.invJob}.</p> : <p>Reject {e.invCom}'s invitation to interview on the job of {e.invJob}.</p>}
-                                        <p>Msg: {e.invMsg}</p>
-                                        <p>----------------------------------------------------</p>
-                                    </div>
-                                )}
+                                <div className="history">
+                                    <h2>Interview Invitation(Waiting)</h2>
+                                    {e.invs.filter(e => e.invStatus==='0' && !e.invDir && (Math.floor(+ new Date()/1000)<=e.invTime+e.invDur) ).map(e=>
+                                        <div className="section">
+                                            <p>{e.invCom} invites the interview of job of {e.invJob}.</p>
+                                            <p>Msg: {e.invMsg}</p>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="history">
+                                    <h2>Application Submitted(Waiting)</h2>
+                                    {e.invs.filter(e => e.invStatus==='0' && e.invDir  && (Math.floor(+ new Date()/1000)<=e.invTime+e.invDur) ).map(e=>
+                                        <div className="section">
+                                            <p>Apply for the job of {e.invJob} in {e.invCom}.</p>
+                                            <p>Msg: {e.invMsg}</p>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="history">
+                                    <h2>Interview Invitation(Finished)</h2>
+                                    {e.invs.filter(e => e.invStatus!=='0' && !e.invDir).map(e=>
+                                        <div className="section">
+                                            {e.invStatus==='1'? <p>Accept {e.invCom}'s invitation to interview on the job of {e.invJob}.</p> : <p>Reject {e.invCom}'s invitation to interview on the job of {e.invJob}.</p>}
+                                            <p>Msg: {e.invMsg}</p>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="history">
                                 <h2>Application Submitted(Finished)</h2>
                                 {e.invs.filter(e => e.invStatus!=='0' && e.invDir).map(e=>
-                                    <div>
+                                    <div className="section">
                                         {e.invStatus==='1'? <p>{e.invCom} accepted application.</p> : <p>{e.invCom} rejected application.</p>}
                                         <p>Msg: {e.invMsg}</p>
-                                        <p>----------------------------------------------------</p>
                                     </div>    
                                 )}
+                                </div>
                             </details>
                             {!type && e.status && jobs.filter(e=>e.status).length? 
                                 <div>
-                                    <br></br>
-                                    <button onClick={()=>setform("interview",infos[index].addr)}>Interview</button>
+                                    <button class="w3-button w3-medium w3-blue w3-round-large" onClick={()=>setform("interview",infos[index].addr)}>Interview</button>
                                     &nbsp;&nbsp;&nbsp;&nbsp;
-                                    <button onClick={()=>setform("offer",infos[index].addr)}>offer</button>
+                                    <button class="w3-button w3-medium w3-blue w3-round-large" onClick={()=>setform("offer",infos[index].addr)}>offer</button>
                                 </div>:null
                             }
-                            <h1>----------------------------------------------------</h1>
                         </div>
                     )}
                 </div>
                 <div className="minor-box">
                     {formstate.type===null? null:
-                    <div>
+                    <div className="inv">
                         <form name="form">
                             <p>Select one job</p>
                             {jobs.filter(e=>e.status&&!e.active[formstate.addr]).map(e=>
                                 <div>
                                     <input type="radio" id={e.index} name="job_index" value={e.index} required></input>
-                                    <label for={e.index}>{e.title}</label>
+                                    <label for={e.index}> {e.title}</label>
                                 </div>
                             )}
                             <br></br>
                         </form>
-                        {formstate.type==="interview"? <button onClick={()=>interview()}>Submit</button>:<button onClick={()=>offer()}>Submit</button>}
+                        {formstate.type==="interview"? <button class="w3-button w3-medium w3-blue w3-round-large" onClick={()=>interview()}>Send</button>:<button class="w3-button w3-medium w3-blue w3-round-large" onClick={()=>offer()}>Submit</button>}
                         <br></br>
                         <br></br>
-                        <button onClick={()=>setformstate({type:null,addr:null})}>Quit</button>
+                        <button class="w3-button w3-medium w3-blue w3-round-large" onClick={()=>setformstate({type:null,addr:null})}>Quit</button>
                     </div>
                     }
                 </div>

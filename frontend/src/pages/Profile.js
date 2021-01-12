@@ -66,9 +66,9 @@ function Profile(props){
 
     return(
         <div className="App">
-            <div className="header">
-                <h1>去中心化人力銀行</h1>
-                <h3>Username:{name}&nbsp;&nbsp;&nbsp;&nbsp;Account Type:{type? "Personal":"Company"}</h3>
+            <div>
+                <h1 className="title1">Decentralized Employment Agency</h1>
+                <h3 className="title2">Username:{name}&nbsp;&nbsp;&nbsp;&nbsp;Account Type:{type? "Personal":"Company"}</h3>
             </div>
             <div className="body">
                 <div className="nav">
@@ -87,98 +87,95 @@ function Profile(props){
                 </div>
                 {type? 
                 <div className="right-box">
-                    <span className="dot" style={status? {backgroundColor:"green"}:{backgroundColor:"red"}}></span>
-                    <h2>You are {status? "opened":"closed"} to {type? "interview and offer":"application"}.</h2>
-                    <button onClick={changeStatus}>{status? "close":"open"}</button>
-                    <h2>----------------------------------------------------</h2>
-                    <h2>Interview Invitation(Waiting)</h2>
-                    {jobs.filter(e => e.invStatus==='0' && !e.invDir && (Math.floor(+ new Date()/1000)<=e.invTime+e.invDur) ).map(e=>
-                        <div>
-                            <p>{e.invCom} invites you to the interview of job of {e.invJob}.</p>
-                            <p>Msg: {e.invMsg}</p>
-                            <button onClick={()=>changeInvStatus(e.invIdx,1)}>Accept</button>
-                            &nbsp;&nbsp;&nbsp;&nbsp;
-                            <button onClick={()=>changeInvStatus(e.invIdx,2)}>Reject</button>
-                            <p>----------------------------------------------------</p>
-                        </div>
-                    )}
-                    <h2>----------------------------------------------------</h2>
-                    <h2>Application Submitted(Waiting)</h2>
-                    {jobs.filter(e => e.invStatus==='0' && e.invDir && (Math.floor(+ new Date()/1000)<=e.invTime+e.invDur) ).map(e=>
-                        <div>
-                            <p>You apply for the job of {e.invJob} in {e.invCom}.</p>
-                            <p>Msg: {e.invMsg}</p>
-                            <p>----------------------------------------------------</p>
-                        </div>    
-                    )}
-                    <h2>----------------------------------------------------</h2>
-                    <h2>Interview Invitation(Finished)</h2>
-                    {jobs.filter(e => e.invStatus!=='0' && !e.invDir).map(e=>
-                        <div>
-                            {e.invStatus==='1'? <p>You accepted {e.invCom}'s invitation to interview on the job of {e.invJob}.</p> : <p>You rejected {e.invCom}'s invitation to interview on the job of {e.invJob}.</p>}
-                            <p>Msg: {e.invMsg}</p>
-                            <p>----------------------------------------------------</p>
-                        </div>
-                    )}
-                    <h2>----------------------------------------------------</h2>
-                    <h2>Application Submitted(Finished)</h2>
-                    {jobs.filter(e => e.invStatus!=='0' && e.invDir).map(e=>
-                        <div>
-                            {e.invStatus==='1'? <p>{e.invCom} accepted your application on the job of {e.invJob}.</p> : <p>{e.invCom} rejected your application on the job of {e.invJob}.</p>}
-                            <p>Msg: {e.invMsg}</p>
-                            <p>----------------------------------------------------</p>
-                        </div>    
-                    )}
+                    <div className="status">
+                        <span className="dot" style={status? {backgroundColor:"green"}:{backgroundColor:"red"}}></span>
+                        <h2>You are {status? "opened":"closed"} to {type? "interview and offer":"application"}.</h2>
+                        <button onClick={changeStatus}>{status? "close":"open"}</button>
+                    </div>
+                    <div className="history">
+                        <h2>Interview Invitation(Waiting)</h2>
+                        {jobs.filter(e => e.invStatus==='0' && !e.invDir && (Math.floor(+ new Date()/1000)<=e.invTime+e.invDur) ).map(e=>
+                            <div className="section">
+                                <p>{e.invCom} invites you to the interview of job of {e.invJob}.</p>
+                                <p>Msg: {e.invMsg}</p>
+                                <button onClick={()=>changeInvStatus(e.invIdx,1)}>Accept</button>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <button onClick={()=>changeInvStatus(e.invIdx,2)}>Reject</button>
+                            </div>
+                        )}
+                    </div>
+                    <div className="history">
+                        <h2>Application Submitted(Waiting)</h2>
+                        {jobs.filter(e => e.invStatus==='0' && e.invDir && (Math.floor(+ new Date()/1000)<=e.invTime+e.invDur) ).map(e=>
+                            <div className="section">
+                                <p>You apply for the job of {e.invJob} in {e.invCom}.</p>
+                                <p>Msg: {e.invMsg}</p>
+                            </div>    
+                        )}
+                    </div>
+                    <div className="history">
+                        <h2>Interview Invitation(Finished)</h2>
+                        {jobs.filter(e => e.invStatus!=='0' && !e.invDir).map(e=>
+                            <div className="section">
+                                {e.invStatus==='1'? <p>You accepted {e.invCom}'s invitation to interview on the job of {e.invJob}.</p> : <p>You rejected {e.invCom}'s invitation to interview on the job of {e.invJob}.</p>}
+                                <p>Msg: {e.invMsg}</p>
+                            </div>
+                        )}
+                    </div>
+                    <div className="history">
+                        <h2>Application Submitted(Finished)</h2>
+                        {jobs.filter(e => e.invStatus!=='0' && e.invDir).map(e=>
+                            <div className="section">
+                                {e.invStatus==='1'? <p>{e.invCom} accepted your application on the job of {e.invJob}.</p> : <p>{e.invCom} rejected your application on the job of {e.invJob}.</p>}
+                                <p>Msg: {e.invMsg}</p>
+                            </div>    
+                        )}
+                    </div>
                 </div>:
                 <div className="right-box">
                     {jobs.map(e=>
-                    <div>
+                    <div className="jobs">
                         <h1>{e.title}</h1>
-                        <h2>Vacancy: {e.vacancy}&nbsp;&nbsp;&nbsp;&nbsp;Remain: {e.remain}&nbsp;&nbsp;&nbsp;&nbsp;Status: <span className="dot" style={e.status? {backgroundColor:"green"}:{backgroundColor:"red"}}></span></h2>
-                        <details>
+                        <h3>Vacancy: {e.vacancy}&nbsp;&nbsp;&nbsp;&nbsp;Remain: {e.remain}&nbsp;&nbsp;&nbsp;&nbsp;Status: <span className="dot" style={e.status? {backgroundColor:"green"}:{backgroundColor:"red"}}></span></h3>
+                        <details className="history">
                             <summary>Application Recieved(Waiting)</summary>
                             {e.invitation.filter(i => i.invStatus==='0' && i.invDir && (Math.floor(+ new Date()/1000)<=i.invTime+i.invDur) ).map(i=>
-                                <div>
+                                <div className="section">
                                     <p>{i.invApp} apply to this job.</p>
                                     <p>Msg: {i.invMsg}</p>
                                     <button onClick={()=>changeInvStatus(i.invIdx,1)}>Accept</button>
                                     &nbsp;&nbsp;&nbsp;&nbsp;
                                     <button onClick={()=>changeInvStatus(i.invIdx,2)}>Reject</button>
-                                    <p>----------------------------------------------------</p>
                                 </div>
                             )}
                         </details>
-                        <details>
+                        <details className="history">
                             <summary>Interview Invatation Sent(Waiting)</summary>
                             {e.invitation.filter(i => i.invStatus==='0' && !i.invDir && (Math.floor(+ new Date()/1000)<=i.invTime+i.invDur) ).map(i=>
-                                <div>
+                                <div className="section">
                                     <p>You invite {i.invApp} to interview.</p>
                                     <p>Msg: {i.invMsg}</p>
-                                    <p>----------------------------------------------------</p>
                                 </div>
                             )}
                         </details>
-                        <details>
+                        <details className="history">
                             <summary>Application Recieved(Finished)</summary>
                             {e.invitation.filter(i => i.invStatus!=='0' && i.invDir).map(i=>
-                                <div>
+                                <div className="section">
                                     {i.invStatus==='1'? <p>You accepted {i.invApp}'s application.</p> : <p>You rejected {i.invApp}'s application.</p>}
                                     <p>Msg: {i.invMsg}</p>
-                                    <p>----------------------------------------------------</p>
                                 </div>
                             )}
                         </details>
-                        <details>
+                        <details className="history">
                             <summary>Interview Invatation Sent(Finished)</summary>
                             {e.invitation.filter(i => i.invStatus!=='0' && !i.invDir).map(i=>
-                                <div>
+                                <div className="section">
                                     {i.invStatus==='1'? <p>{i.invApp} accepted your invitation to interview.</p> : <p>{i.invApp} rejected your invitation to interview.</p>}
                                     <p>Msg: {i.invMsg}</p>
-                                    <p>----------------------------------------------------</p>
                                 </div>
                             )}
                         </details>
-                        <h2>----------------------------------------------------</h2>
                     </div>)}
                 </div>
                 }
