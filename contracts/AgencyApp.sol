@@ -1,3 +1,5 @@
+
+  
 pragma solidity ^0.5.0;
 import "./Applicant.sol";
 import "./Company.sol";
@@ -180,6 +182,7 @@ contract AgencyApp is ApplicantApp, CompanyApp  {
         Open,
         Accept,
         Reject,
+        Negotiate,
         Close, 
         Last
     }
@@ -220,7 +223,7 @@ contract AgencyApp is ApplicantApp, CompanyApp  {
         // require(isExpired(_offer.createTime, off_Expire), "Offer is expired!");
         // require(!inCoolDown(_offer.updateTime, off_Cooldown), "Offer is in cool down!");
         require((offers[_offIdx].Com == _addr));
-        require((offers[_offIdx].Status == uint16(OffStatus.Open) || offers[_offIdx].Status == uint16(OffStatus.Reject)));
+        require((offers[_offIdx].Status == uint16(OffStatus.Open) || offers[_offIdx].Status == uint16(OffStatus.Negotiate)));
         require(!isExpired(offers[_offIdx].createTime, off_Expire));
         require(!inCoolDown(offers[_offIdx].updateTime, off_Cooldown));
         _;
