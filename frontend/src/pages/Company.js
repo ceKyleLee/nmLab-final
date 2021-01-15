@@ -26,12 +26,21 @@ function Company(props){
                 for(let j=0;j<m;j=j+1){
                     let {0:title, 1:description, 2:vacancy, 3:remain, 4:status} = await props.contract.methods.getJobContent(addr,j).call();
                     let job_inv_num = await props.contract.methods.getJobInvNum(addr,j).call();
+                    let job_off_num = await props.contract.methods.getJobOffNum(addr,j).call();
                     let job_invs = [];
+                    let job_offs = [];
                     for(let k=0;k<job_inv_num;k=k+1){
                         let job_inv_index = await props.contract.methods.getJobInvIdx(addr,j,k).call();
                         let {0: invApp, 1: invCom, 2: invJob, 3: invMsg, 4: invDir, 5:invStatus, 6: invTime, 7: invDur} = await props.contract.methods.getInvitationInfo(job_inv_index).call();
                         let {0: App_name} = await props.contract.methods.getAddrInfo(invApp).call();
                         job_invs[k] = {invIdx:job_inv_index, invApp:App_name, invCom:invCom, invJob:invJob, invMsg:invMsg, invDir:invDir, invStatus:invStatus, invTime:parseInt(invTime,10), invDur:parseInt(invDur,10)};
+                    }
+                    for(let k=0;k<job_off_num;k=k+1){
+                        let job_off_index = await props.contract.methods.getJobOffIdx(addr,j,k).call();
+                        let {0: offApp, 1: offCom, 2: offJob, 3: offMsg, 4: offPay, 5:offStatus, 6: offcreateTime, 7:offupdateTime} = await props.contract.methods.getOfferInfo(job_off_index).call();
+                        let {0: App_name} = await props.contract.methods.getAddrInfo(offApp).call();
+
+                        job_offs[k] = {offIdx:job_off_index, offApp:App_name, offCom:offCom, offPay:offPay, offJob:offJob, offMsg:offMsg, offStatus:offStatus, offcreateTime:offcreateTime, offupdateTime:offupdateTime};
                     }
                     let active = false;
                     if(type){
@@ -51,7 +60,7 @@ function Company(props){
                         }
                         //****************************************
                     }
-                    jobs[j] = {title:title, description:description, vacancy:vacancy, remain:remain, status:status==='0'?true:false, invs:job_invs, active:active};
+                    jobs[j] = {title:title, description:description, vacancy:vacancy, remain:remain, status:status==='0'?true:false, invs:job_invs, active:active, offs:job_offs};
                 }
                 infos_tmp[i] = {addr:addr, name:_name, content:content, jobs:jobs};
             }
@@ -69,9 +78,9 @@ function Company(props){
 
     return(
         <div className="App">
-            <div>
-                <h1 className="title1">Decentralized Employment Agency</h1>
-                <h3 className="title2">Username:{name}&nbsp;&nbsp;&nbsp;&nbsp;Account Type:{type? "Personal":"Company"}</h3>
+            <div className="header">
+                <h1>去中心化人力銀行</h1>
+                <h3>Username:{name}&nbsp;&nbsp;&nbsp;&nbsp;Account Type:{type? "Personal":"Company"}</h3>
             </div>
             <div className="body">
                 <div className="nav">
@@ -87,64 +96,103 @@ function Company(props){
                 </div>
                 <div className="major-box">
                     {infos.map(e=>
-                        <div className="jobs">
+                        <div>
                             <h1>{e.name}</h1>
-                            <details className="history">
+                            <details>
                                 <summary>Introduction</summary>
                                 <h2>{e.content}</h2>
                             </details>
-                            <details className="history">
+                            <details>
                                 <summary>Job List</summary>
                                 {e.jobs.map((j,index)=>
-                                    <div className="jobs">
-                                        <h2>{j.title}&nbsp;&nbsp;&nbsp;&nbsp;{type&&j.status&&status&&!j.active? <button class="w3-button w3-medium w3-blue w3-round-large" onClick={()=>apply(e.addr,index)}>Apply</button>:null}</h2>
-                                        <h3>Vacancy: {j.vacancy}&nbsp;&nbsp;&nbsp;&nbsp;Remain: {j.remain}&nbsp;&nbsp;&nbsp;&nbsp;Status: <span className="dot" style={j.status? {backgroundColor:"green"}:{backgroundColor:"red"}}></span></h3>
-                                        <h4>Description: {j.description}</h4>
-                                        <details className="history">
+                                    <div>
+                                        <h2>{j.title}&nbsp;&nbsp;&nbsp;&nbsp;{type&&j.status&&status&&!j.active? <button onClick={()=>apply(e.addr,index)}>Apply</button>:null}</h2>
+                                        <h2>Vacancy: {j.vacancy}&nbsp;&nbsp;&nbsp;&nbsp;Remain: {j.remain}&nbsp;&nbsp;&nbsp;&nbsp;Status: <span className="dot" style={j.status? {backgroundColor:"green"}:{backgroundColor:"red"}}></span></h2>
+                                        <h3>Description: {j.description}</h3>
+                                        <details>
+                                            <summary>Offer Sent(Waiting)</summary>
+                                            {j.offs.filter(i => i.offStatus==='0').map(i=>
+                                            <div>
+                                                <p>{i.offApp} get offer of this job.</p>
+                                                <p>Payment: {i.offPay}</p>
+                                                <p>Msg: {i.offMsg}</p>
+                                                <p>----------------------------------------------------</p>
+                                            </div>
+                                            )}
+                                        </details>
+                                        <details>
                                             <summary>Application Recieved(Waiting)</summary>
                                             {j.invs.filter(i => i.invStatus==='0' && i.invDir && (Math.floor(+ new Date()/1000)<=i.invTime+i.invDur) ).map(i=>
-                                                <div className="section">
+                                                <div>
                                                     <p>{i.invApp} apply to this job.</p>
                                                     <p>Msg: {i.invMsg}</p>
+                                                    <p>----------------------------------------------------</p>
                                                 </div>
                                             )}
                                         </details>
-                                        <details className="history">
+                                        <details>
                                             <summary>Interview Invatation Sent(Waiting)</summary>
                                             {j.invs.filter(i => i.invStatus==='0' && !i.invDir  && (Math.floor(+ new Date()/1000)<=i.invTime+i.invDur) ).map(i=>
-                                                <div className="section">
+                                                <div>
                                                     <p>Invite {i.invApp} to interview.</p>
                                                     <p>Msg: {i.invMsg}</p>
+                                                    <p>----------------------------------------------------</p>
                                                 </div>
                                             )}
                                         </details>
-                                        <details className="history">
+                                        <details>
+                                            <summary>Offer(Negotiate)</summary>
+                                            {j.offs.filter(i => i.offStatus==='3' ).map(i=>
+                                                <div>
+                                                <p>Offer is negotiating</p>    
+                                                <p>Payment: {i.offPay}</p>
+                                                <p>Msg: {i.offMsg}</p>
+                                                <p>----------------------------------------------------</p>
+                                                </div>
+                                            )}
+                                        </details>
+                                        <details>
+                                            <summary>Offer Result(Finished)</summary>
+                                            {j.offs.filter(i => i.offStatus==='1' || i.offStatus==='2' ).map(i=>
+                                                <div>
+                                                {i.offStatus==='1'? <p>{i.offApp} accepted offer  .</p> : <p>{i.offApp} rejected offer</p>}
+                                                <p>Payment: {i.offPay}</p>
+                                                <p>Msg: {i.offMsg}</p>
+                                                <p>----------------------------------------------------</p>
+                                                </div>
+                                            )}
+                                        </details>
+                                        <details>
                                             <summary>Application Recieved(Finished)</summary>
                                             {j.invs.filter(i => i.invStatus!=='0' && i.invDir).map(i=>
-                                                <div className="section">
+                                                <div>
                                                     {i.invStatus==='1'? <p>Accept {i.invApp}'s application.</p> : <p>Reject {i.invApp}'s application.</p>}
                                                     <p>Msg: {i.invMsg}</p>
+                                                    <p>----------------------------------------------------</p>
                                                 </div>
                                             )}
                                         </details>
-                                        <details className="history">
+                                        <details>
                                             <summary>Interview Invatation Sent(Finished)</summary>
                                             {j.invs.filter(i => i.invStatus!=='0' && !i.invDir).map(i=>
-                                                <div className="section">
+                                                <div>
                                                     {i.invStatus==='1'? <p>{i.invApp} accepted your invitation to interview.</p> : <p>{i.invApp} rejected your invitation to interview.</p>}
                                                     <p>Msg: {i.invMsg}</p>
+                                                    <p>----------------------------------------------------</p>
                                                 </div>
                                             )}
                                         </details>
+                                        <h2>----------------------------------------------------</h2>
                                     </div>
                                 )}
                             </details>
+                            <h1>----------------------------------------------------</h1>
                         </div>
                     )}
                 </div>
                 <div className="minor-box">
                     {type?
-                        <div className="status">
+                        <div>
                             <h2>Status:&nbsp;&nbsp;<span className="dot" style={status? {backgroundColor:"green"}:{backgroundColor:"red"}}></span></h2>
                         </div>:null
                     }
