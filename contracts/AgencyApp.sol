@@ -1,5 +1,3 @@
-
-  
 pragma solidity ^0.5.0;
 import "./Applicant.sol";
 import "./Company.sol";
@@ -198,8 +196,8 @@ contract AgencyApp is ApplicantApp, CompanyApp  {
         uint256 createTime;
         uint256 updateTime;
     }
-    uint256 constant off_Expire   = 1 seconds;
-    uint256 constant off_Cooldown = 1 seconds;
+    uint256 constant off_Expire   = 7 days;
+    uint256 constant off_Cooldown = 7 days;
 
     Offer[] offers;
 
