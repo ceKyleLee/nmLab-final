@@ -1,5 +1,5 @@
 frontend/debug.log
 node_modules/
 package-lock.json
-build/
-frontend/src/build/contracts
+build/contracts/
+frontend/src/build/contracts/

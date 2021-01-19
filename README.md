@@ -1,153 +1,95 @@
-# Checkpoint
-## 1. 建立帳號系統(個人與公司)
-- 個人帳號: 姓名
-- 公司帳號: 公司名稱
-### Frontend
-- 確認帳號是否註冊
-- 無帳號則跳出註冊頁面，輸入名稱與type(可顯示metamask blockchain 帳號)
-- 有帳號則跳進資料頁面，與contract要求帳號內資料
-
-### Contract
-- Mapping of address and account struct
-- Interface for register and login(Retreive account data)
-
-function:
-- isValidAccount(address) ( 確認帳號是否註冊 )
-- addAccount(name, type) ( 新增帳號(兩種type: 個人與公司, 名稱) )
-- getAccount(address) ( 要求帳號內資料 )
-
-## 2. 上傳個人基本資料、履歷與公司資料
-表格形式(固定或可新增欄位)或純文字形式(限制字數)
-
-#### 個人:
-- 聯絡方式
-- 期望薪資
-- 學歷
-- 應徵工作
-
-#### 公司:
-- 介紹
-- 聯絡方式
-
-### Frontend
-編輯資料並發送給contract
-
-~~固定時間render一次頁面重要一次data~~
-接收到event(OnAccountUpdate)後重新getAccount
-
-### Contract
-- Storage for data and resume(IPFS maybe?)
-- Interface for retrieve all data in account struct
-- Interface for update the data in struct
-
-function:
-- updataAccount(content)
-
-## 3. 建立交易系統
-
-### Frontend
-- 取得所有其他個人與公司帳戶資料
-    * 個人: Name, resume, application history(optional)
-    * 公司: Name, introduction, opened job list, offers and interview invitations history(optional)
-
-- 取得帳戶所有交易紀錄與狀態(status)
-    * 個人: offers and interview invitations from company, application sent from account
-    * 公司: application to opened job from applicants, offers and interview invitations from account
-
-- 更新上傳功能
-    * 公司: Add and update opened job list 
-        - Title
-        - Description
-        - Number/Remain
-        - status(open/close)
-
-- 發起交易
-    * 個人: Send application to opened job, accept/reject offer/interview invitation
-    * 公司: Send offer/interview invitation to applicant, accecpt/reject application
+# Networking and Multimedia Lab (2020, Fall) Final Project - Decentralized Employment Agency 
 
 
-### Contract
-
-##### Struct 
-1. Account
-- Applicant:
-    * Name
-    * Resume
-    * Status: Open/Close
-
-        When Closed, no offer can be sent to this account.
-
-    Action: 
-    - Send Application 
-    - Check/Reject interview invitation
-    - Check/Reject offer (If check auto reject all other offers)
-
-- Company:
-    * Name
-    * Intro
-    * Job list(array)
-        - Job
-            * Title
-            * ID
-            * Description
-            * Number/Remain
-            * Status: Open/Close
-    
-        Action:
-        - Send interview invitation
-        - Send Offer
-        - Check/Reject application 
-
-2. Transaction
-- Limit for creating new offer
-    * Applicant status: open
-	* Job: remain > 0
-    * No open tx between them.
-    * Cool down: Only after cool down since last closed inivite(if any) the new invitation can be sent.
-
-- Offer
-    * Payment(array)
-    * Applicant address
-    * Company address
-    * JobID
-    * Message
-    * Status
-        - open (Wating for applicant to check)
-        - reject
-        - accept
-    * createTime
-    * updateTime
-    * Action:
-        - Before offer expired(since created) or accepted, job can update payment and message(after cool down or applicant reject).
-        - Job can only send num of offer less or equal to remain.
-		- Once applicant accept one offer, automatic close all other offers, remain of job - 1.
-
-- Invitation
-    * Applicant address
-    * Company address
-    * JobID
-    * Message
-    * From (company/applicant)
-    * Status
-        - open   (wating for applicant to check)
-		- reject (applicant not satisfy with the last offer, job can update offer msg and payment.)
-		- accpet (applicant accecpt offer)
-		- close  (offer is expired or applicant already accept another offer)
-    * createTime
-    * updateTime
-
-
-
-# Usage
-
-## 1.Prerequisite
-- cd frontend
+## Prerequisite
+- node.js
+- npm
+- ganache-cli(or ganache)
+- truffle 
 - yarn
+- Metamask(browser add-ons)
 
-## 2.Steps
-- open ganache gui
-- truffle migrate
-- cp build to frontend/src/build
-- open metamask and connect to the account
-- cd frontend
-- yarn start
+```
+~ $ sudo apt install nodejs
+~ $ sudo apt install npm
+~ $ npm install -g ganache-cli
+~ $ npm install -g truffle
+~ $ npm install -g yarn
+```
+
+## Quick Start
+
+1. git clone https://github.com/1998Isabel/NMLabFinalProject.git
+2. cd nmlab-final/
+3. Start ganachi(or ganache-cli) at default port(7545)
+4. Migrate contract, compile and start frontend webpage
+```
+sh migrate.sh
+```
+5. cd front/
+
+## Ussage
+
+### Register and Sign in
+
+1. Open https://localhost:3000
+2. Import Ethereum accout from ganache and connect to the ganache chain
+3. Enter account name and select account type to register
+4. Click **register** and confirm matamask transaction
+
+### Manage user profile
+#### Upload Resume/Introduction (Applicant/Company)
+1. Click *Upload resume/intro* at left panel
+2. Type in applicant resume/company introduction
+3. Click **submit** and confirm matamask transaction
+
+#### Add new open job (Company)
+1. Click *Job manager* at left panel
+2. Type in job title, vacancy and job description
+3. Click **ADD** and confirm matamask transaction
+
+#### Modify job (Company)
+1. Click *Job manager* at left panel
+2. Click **Modify** at the bottom of the job in right side column
+3. Type in new job title, vacancy and job description
+4. Click **Update** and confirm matamask transaction
+
+### Invitation Action
+#### Apply job (Applicant)
+1. Click *Profile* at left panel and click **open** in right side column (if not open)
+2. Click *Companies' info* at left panel and open *Job list* at the bottom of Company account
+3. Click **Apply** at the right of job title
+4. Type in message and confirm matamask transaction
+
+#### Interact with interview (Applicant)    
+1. Click *Profile* at left panel
+2. Click **Accept** or **Reject** and confirm matamask transaction
+
+#### Invite for interview (Company)
+1. Click *Job manager* at left panel and click *Open job* at the job in right side column (if not open)
+2. Click *Applicants' info* at left panel and click *interview* at the bottom of Applicant account
+3. Select job and Click **Send** right side column 
+4. Type in message and confirm matamask transaction
+
+#### Interact with applicant (Company)
+1. Click *Profile* at left panel
+2. Open *Application Recieved(Waiting)* at the job in right side column
+3. Click **Accept** or **Reject** and confirm matamask transaction
+
+### Offer Action
+#### Send offer (Company)
+1. Click *Job manager* at left panel and click **Open job** at the job in right side column (if not open)
+2. Click *Applicants' info* at left panel and click **offer** at the bottom of Applicant account
+3. Select job and Click **Submit** right side column 
+4. Type in payment, message and confirm matamask transaction
+
+#### Interact with offer (Applicant)
+1. Click *Profile* at left panel
+2. Click **Accept**/**Reject**/**Negotiate** and confirm matamask transaction
+
+#### Update with offer (Company)
+1. Click *Profile* at left panel
+2. open *Offer (Negotiate)* at the job in right side column
+3. Click **Change payment** 
+4. Type in new payment and confirm matamask transaction
+
