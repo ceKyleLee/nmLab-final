@@ -117,7 +117,7 @@ function Applicant(props){
     return(
         <div className="App">
             <div>
-                <h1 className="title1">去中心化人力銀行</h1>
+                <h1 className="title1">Decentralized Employment Agency</h1>
                 <h3 className="title2">Username:{name}&nbsp;&nbsp;&nbsp;&nbsp;Account Type:{type? "Personal":"Company"}</h3>
             </div>
             <div className="body">
