@@ -25,8 +25,10 @@
 4. Migrate contract, compile and start frontend webpage
 ```
 sh migrate.sh
+cd frontend/
+yarn
+yarn start
 ```
-5. cd front/
 
 ## Ussage
 

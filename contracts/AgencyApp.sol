@@ -285,10 +285,10 @@ contract AgencyApp is ApplicantApp, CompanyApp  {
         require(!canSendOffer(_appAddr, _comAddr, _jobIdx));
         require((_applicant.Status == uint16(AppStatus.Open)));
         require((_job.Status == uint16(JobStatus.Open)));
-        require((_job.Employee.length <= _job.Number));
+        require((_job.Employee.length < _job.Number));
 
         uint sendedOfferNum = getJobActiveOfferNum(_job);
-        require((sendedOfferNum <= (_job.Number - _job.Employee.length)));
+        require((sendedOfferNum < (_job.Number - _job.Employee.length)));
 
         Offer memory new_offer = Offer({
             Payment: _payment,
